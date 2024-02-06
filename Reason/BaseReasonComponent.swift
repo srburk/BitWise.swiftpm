@@ -7,41 +7,28 @@
 
 import Foundation
 
-class BaseReasonComponent: CustomStringConvertible {
+protocol BaseReasonComponent: AnyObject, CustomStringConvertible {
     
-    var id: UUID
-    var label: String
-    var inputConnections: [ReasonConnection] = []
-    var outputConnections: [ReasonConnection] = []
+    var id: UUID { get }
+    var label: String { get set }
+    var inputConnections: [ReasonConnection] { get set }
+    var outputConnections: [ReasonConnection] { get set }
     
-    var processingGroup: Int = 0 // having this stored in the node makes it easier to determine what group should have a change when connecting new child nodes
+    var processingGroup: Int { get set } // having this stored in the node makes it easier to determine what group should have a change when connecting new child nodes
     
-    var computeLogic: (() -> Bool)
+    init(label: String)
     
-    required init(label: String, computeLogic: @escaping (() -> Bool)) {
-        self.id = UUID()
-        self.label = label
-        self.computeLogic = computeLogic
-    }
-    
-    var description: String {
-        return """
-        
-        =======================
-        ID: \(id)
-        Label: \(self.label)
-        Inputs: \(self.inputConnections.compactMap({ $0.head.label }))
-        Outputs: \(self.outputConnections.compactMap({ $0.tail.label }))
-        ProcessingGroup: \(self.processingGroup)
-        =======================
-        """
-    }
+    func compute() -> Bool
 }
 
 extension BaseReasonComponent {
     
+    // populate connections with output value
     public func compute() {
-        
+        let output = self.compute()
+        for outputConnection in self.outputConnections {
+            outputConnection.value = output
+        }
     }
     
     // connect utilities - returns reference to self to chain after creating variable
