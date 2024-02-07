@@ -22,6 +22,16 @@ final class ReasonEngine {
 
 extension ReasonEngine {
     
+    // go through queue and compute
+    public func compute() {
+        for group in queue.keys.sorted() {
+            print("Group \(group):")
+            for node in queue[group] ?? [] {
+                node.compute()
+            }
+        }
+    }
+    
     public func printInOrder() {
         print("Sorted Nodes:")
         for group in queue.keys.sorted() {

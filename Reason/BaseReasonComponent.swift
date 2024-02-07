@@ -18,18 +18,10 @@ protocol BaseReasonComponent: AnyObject, CustomStringConvertible {
     
     init(label: String)
     
-    func compute() -> Bool
+    func compute()
 }
 
 extension BaseReasonComponent {
-    
-    // populate connections with output value
-    public func compute() {
-        let output = self.compute()
-        for outputConnection in self.outputConnections {
-            outputConnection.value = output
-        }
-    }
     
     // connect utilities - returns reference to self to chain after creating variable
     public func connect(to targetNode: BaseReasonComponent, asInput: Bool = false) -> BaseReasonComponent {
