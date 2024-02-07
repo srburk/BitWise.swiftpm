@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 protocol BaseReasonComponent: AnyObject, CustomStringConvertible {
     
@@ -21,6 +22,8 @@ protocol BaseReasonComponent: AnyObject, CustomStringConvertible {
     var processingGroup: Int { get set } // having this stored in the node makes it easier to determine what group should have a change when connecting new child nodes
     
     init(label: String)
+    
+    var shape: any Shape { get }
     
     func compute()
 }

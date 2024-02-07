@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 class ANDGate: BaseReasonComponent {
     
@@ -25,6 +26,10 @@ class ANDGate: BaseReasonComponent {
         self.inputConnections = []
         self.outputConnections = []
         self.processingGroup = 0
+    }
+    
+    var shape: any Shape {
+        return Circle()
     }
     
     func compute() {

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 class ORGate: BaseReasonComponent {
     
@@ -31,6 +32,10 @@ class ORGate: BaseReasonComponent {
     deinit {
         // testing to make sure things are freed when they need to be
         Log.reason.warning("Deinitialized component: \(self.id)")
+    }
+    
+    var shape: any Shape {
+        return Capsule()
     }
     
     func compute() {

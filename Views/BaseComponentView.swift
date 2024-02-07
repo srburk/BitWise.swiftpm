@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+// I'm not sure that this will stay as a SwiftUI view. I have performance concerns over every component being its own view for larger projects
+
 // reason components return this view and use their models to generate a shape and describe orientation of I/O. All Reason Components share some behaviors, like highlighting parts based on the editing mode and elligibility
 struct BaseComponentView: View {
     
@@ -16,6 +18,7 @@ struct BaseComponentView: View {
     
     var body: some View {
         VStack {
+            
             Text(component.description)
             
             HStack {

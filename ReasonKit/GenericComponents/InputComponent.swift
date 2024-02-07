@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 class InputComponent: BaseReasonComponent {
         
@@ -34,6 +35,10 @@ class InputComponent: BaseReasonComponent {
     
     public func toggle() {
         self.output.toggle()
+    }
+    
+    var shape: any Shape {
+        return Rectangle()
     }
     
     public func compute() {

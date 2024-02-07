@@ -15,6 +15,8 @@ final class EditorContext: ObservableObject {
     // this should be private(set) in the future. For prototyping I have it as public
     @Published public var selectedComponent: BaseReasonComponent?
     
+    // editor context will need to communicate with rendering engine for reasonkit
+    
 }
 
 extension EditorContext {

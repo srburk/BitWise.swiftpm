@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 class OutputComponent: BaseReasonComponent {
         
@@ -25,6 +26,10 @@ class OutputComponent: BaseReasonComponent {
     required init(label: String) {
         self.id = UUID()
         self.label = label
+    }
+    
+    var shape: any Shape {
+        return Rectangle()
     }
     
     public func compute() {
