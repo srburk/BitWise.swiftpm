@@ -51,10 +51,4 @@ extension BaseReasonComponent {
         Log.reason.warning("⚠️ BaseReasonComponent.disconnect() not implemented")
         return self
     }
-    
-    public func add() -> BaseReasonComponent {
-        ReasonEngine.shared.add(self)
-        return self
-    }
-    
 }

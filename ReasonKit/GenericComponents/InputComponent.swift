@@ -1,13 +1,13 @@
 //
-//  File.swift
-//  
+//  InputComponent.swift
+//
 //
 //  Created by Sam Burkhard on 2/6/24.
 //
 
 import Foundation
 
-class OutputComponent: BaseReasonComponent {
+class InputComponent: BaseReasonComponent {
         
     var id: UUID
     var label: String
@@ -15,7 +15,7 @@ class OutputComponent: BaseReasonComponent {
     var inputConnections: [ReasonConnection] = []
     var outputConnections: [ReasonConnection] = []
     
-    var output: Bool = true // this is the special output component interaction (shared with inputcomponent)
+    private(set) var output: Bool = true // this is the special inputcomponent interaction
     
     var processingGroup: Int = 0
     
@@ -24,22 +24,26 @@ class OutputComponent: BaseReasonComponent {
         self.label = label
     }
     
+    public func initialValue(_ value: Bool) -> BaseReasonComponent {
+        self.output = value
+        return self
+    }
+    
     public func compute() {
-        self.output = inputConnections.contains(where: { $0.value })
+        for outputConnection in outputConnections {
+            outputConnection.value = output
+        }
     }
 }
 
-extension OutputComponent {
+extension InputComponent {
     
     var description: String {
         return """
-
-        =======================
         ID: \(id)
         Type: Output
         Label: \(self.label)
-        Inputs: \(self.inputConnections.compactMap({ "\($0.head.label) | \($0.value)" }))
-        =======================
+        Outputs: \(self.outputConnections.compactMap({ "\($0.tail.label) | \($0.value)" }))
         """
     }
 }

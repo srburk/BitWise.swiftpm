@@ -1,13 +1,13 @@
 //
-//  ANDGate.swift
-//
+//  ORGate.swift
+//  
 //
 //  Created by Sam Burkhard on 2/1/24.
 //
 
 import Foundation
 
-class ANDGate: BaseReasonComponent {
+class ORGate: BaseReasonComponent {
     
     var id: UUID
     
@@ -27,26 +27,24 @@ class ANDGate: BaseReasonComponent {
     
     func compute() {
         
-        let value = inputConnections.allSatisfy({ $0.value })
-        
+        let value = inputConnections.contains(where: { $0.value })
+
+        // there could be more logic for this based on what kind of output should exist
         for outputConnection in self.outputConnections {
             outputConnection.value = value
         }
     }
 }
 
-extension ANDGate {
+extension ORGate {
     var description: String {
         return """
-
-        =======================
         ID: \(id)
-        Type: AND Gate
+        Type: OR Gate
         Label: \(self.label)
         Inputs: \(self.inputConnections.compactMap({ "\($0.head.label) | \($0.value)" }))
         Outputs: \(self.outputConnections.compactMap({ "\($0.tail.label) | \($0.value)" }))
         ProcessingGroup: \(self.processingGroup)
-        =======================
         """
     }
 }

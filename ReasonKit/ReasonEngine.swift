@@ -7,13 +7,11 @@
 
 import Foundation
 
-// global engine for processing nodes
-final class ReasonEngine {
-    
-    static let shared = ReasonEngine()
-        
+// engine for processing nodes
+final class ReasonEngine: ObservableObject {
+            
     // nodes stored with graph relationship
-    public var nodes: [BaseReasonComponent] = []
+    @Published public var nodes: [BaseReasonComponent] = []
     
     // nodes in processingGroups
     private(set) var queue: [Int: [BaseReasonComponent]] = [:]
