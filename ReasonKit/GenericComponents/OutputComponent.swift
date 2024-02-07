@@ -12,6 +12,9 @@ class OutputComponent: BaseReasonComponent {
     var id: UUID
     var label: String
     
+    var inputCount: Int = 1
+    var outputCount: Int = 0
+    
     var inputConnections: [ReasonConnection] = []
     var outputConnections: [ReasonConnection] = []
     

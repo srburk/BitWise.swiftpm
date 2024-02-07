@@ -11,6 +11,10 @@ protocol BaseReasonComponent: AnyObject, CustomStringConvertible {
     
     var id: UUID { get }
     var label: String { get set }
+    
+    var inputCount: Int { get set }
+    var outputCount: Int { get set }
+    
     var inputConnections: [ReasonConnection] { get set }
     var outputConnections: [ReasonConnection] { get set }
     
@@ -24,16 +28,26 @@ protocol BaseReasonComponent: AnyObject, CustomStringConvertible {
 extension BaseReasonComponent {
     
     // connect utilities - returns reference to self to chain after creating variable
-    public func connect(to targetNode: BaseReasonComponent, asInput: Bool = false) -> BaseReasonComponent {
+    public func connect(to targetNode: BaseReasonComponent, asInput: Bool = false) -> 
+    
+        BaseReasonComponent {
         
         if asInput {
-            let newConnection = ReasonConnection(head: self, tail: targetNode)
-            self.outputConnections.append(newConnection)
-            targetNode.inputConnections.append(newConnection)
+            if self.outputConnections.count < self.outputCount && targetNode.inputConnections.count < targetNode.inputCount {
+                let newConnection = ReasonConnection(head: self, tail: targetNode)
+                self.outputConnections.append(newConnection)
+                targetNode.inputConnections.append(newConnection)
+            } else {
+                Log.reason.warning("\(self.id) can't be inputted in to \(targetNode.id)")
+            }
         } else {
-            let newConnection = ReasonConnection(head: targetNode, tail: self)
-            self.inputConnections.append(newConnection)
-            targetNode.outputConnections.append(newConnection)
+            if self.inputConnections.count < self.inputCount && targetNode.outputConnections.count < targetNode.outputCount {
+                let newConnection = ReasonConnection(head: targetNode, tail: self)
+                self.inputConnections.append(newConnection)
+                targetNode.outputConnections.append(newConnection)
+            } else {
+                Log.reason.warning("\(targetNode.id) can't be inputted in to \(self.id)")
+            }
         }
         
         return self

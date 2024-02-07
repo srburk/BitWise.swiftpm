@@ -9,39 +9,42 @@ struct ContentView: View {
         
         NavigationStack {
             
-            ScrollView(.horizontal) {
-                VStack {
-                    Spacer()
-                    HStack {
-                        ForEach(engine.nodes, id: \.id) { node in
-                            Text(node.description)
-                                .padding()
-                                .border(Color.primary)
-                                .onTapGesture {
-                                    editor.tappedComponent(node)
+            GeometryReader { proxy in
+                
+                HStack {
+                    ScrollView(.horizontal) {
+                        VStack {
+                            Spacer()
+                            HStack {
+                                ForEach(engine.nodes, id: \.id) { node in
+                                    BaseComponentView(component: node)
                                 }
+                            }
+                            Spacer()
                         }
                     }
-                    Spacer()
+                    
+                    InspectorView(proxy: proxy)
+                    
                 }
                 
             }
+            .ignoresSafeArea(.all, edges: .bottom)
             
             .toolbar {
                 
                 ToolbarItemGroup(placement: .topBarLeading) {
                     Text("Editor Mode: \(editor.mode.rawValue)")
-                    Text("LastTapped: \(editor.lastTouchedComponent?.description ?? "None")")
                 }
                 
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     
                     Button {
                         // this should be a different mechanism for when we're in placement mode, for now I just have it as wiring to make connections easier
-                        if editor.lastTouchedComponent != nil {
-                            editor.lastTouchedComponent!.cleanForRemoval()
-                            engine.remove(editor.lastTouchedComponent!)
-                            editor.lastTouchedComponent = nil
+                        if editor.selectedComponent != nil {
+                            editor.selectedComponent!.cleanForRemoval()
+                            engine.remove(editor.selectedComponent!)
+                            editor.selectedComponent = nil
                         }
                     } label: {
                         Image(systemName: "trash.fill")
@@ -52,12 +55,6 @@ struct ContentView: View {
                         engine.compute()
                     } label: {
                         Image(systemName: "play.fill")
-                    }
-                    
-                    Button {
-                        engine.add(ORGate(label: "TestORGate"))
-                    } label: {
-                        Image(systemName: "plus")
                     }
                 }
             }

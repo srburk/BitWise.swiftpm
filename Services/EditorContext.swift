@@ -13,7 +13,7 @@ final class EditorContext: ObservableObject {
     @Published private(set) var mode: EditingMode = .none
     
     // this should be private(set) in the future. For prototyping I have it as public
-    @Published public var lastTouchedComponent: BaseReasonComponent?
+    @Published public var selectedComponent: BaseReasonComponent?
     
 }
 
@@ -21,9 +21,14 @@ extension EditorContext {
     
     public func tappedComponent(_ component: BaseReasonComponent) {
         
+        // check for input to toggle based on tap
+        if let input = component as? InputComponent {
+            input.toggle()
+        }
+        
         if mode == .wiring {
             
-            if let sourceComponent = lastTouchedComponent, sourceComponent.id != component.id {
+            if let sourceComponent = selectedComponent, sourceComponent.id != component.id {
                 _ = component.connect(to: sourceComponent)
             }
             self.mode = .none
@@ -32,7 +37,7 @@ extension EditorContext {
             self.mode = .wiring
         }
         
-        self.lastTouchedComponent = component
+        self.selectedComponent = component
 
     }
 }
