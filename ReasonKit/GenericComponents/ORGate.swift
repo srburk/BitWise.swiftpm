@@ -25,6 +25,11 @@ class ORGate: BaseReasonComponent {
         self.processingGroup = 0
     }
     
+    deinit {
+        // testing to make sure things are freed when they need to be
+        Log.reason.warning("Deinitialized component: \(self.id)")
+    }
+    
     func compute() {
         
         let value = inputConnections.contains(where: { $0.value })

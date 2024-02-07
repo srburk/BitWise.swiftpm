@@ -16,9 +16,9 @@ struct ContentView: View {
                         ForEach(engine.nodes, id: \.id) { node in
                             Text(node.description)
                                 .padding()
-                                .border(Color.black)
+                                .border(Color.primary)
                                 .onTapGesture {
-                                    editor.changeMode(to: .wiring)
+                                    editor.tappedComponent(node)
                                 }
                         }
                     }
@@ -31,12 +31,25 @@ struct ContentView: View {
                 
                 ToolbarItemGroup(placement: .topBarLeading) {
                     Text("Editor Mode: \(editor.mode.rawValue)")
+                    Text("LastTapped: \(editor.lastTouchedComponent?.description ?? "None")")
                 }
                 
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     
                     Button {
+                        // this should be a different mechanism for when we're in placement mode, for now I just have it as wiring to make connections easier
+                        if editor.lastTouchedComponent != nil {
+                            editor.lastTouchedComponent!.cleanForRemoval()
+                            engine.remove(editor.lastTouchedComponent!)
+                            editor.lastTouchedComponent = nil
+                        }
+                    } label: {
+                        Image(systemName: "trash.fill")
+                    }
+                    
+                    Button {
                         engine.orderNodes()
+                        engine.compute()
                     } label: {
                         Image(systemName: "play.fill")
                     }

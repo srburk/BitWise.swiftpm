@@ -11,7 +11,7 @@ import Foundation
 final class ReasonEngine: ObservableObject {
             
     // nodes stored with graph relationship
-    @Published public var nodes: [BaseReasonComponent] = []
+    @Published private(set) var nodes: [BaseReasonComponent] = []
     
     // nodes in processingGroups
     private(set) var queue: [Int: [BaseReasonComponent]] = [:]
@@ -96,6 +96,26 @@ extension ReasonEngine {
         for component in components {
             self.add(component)
         }
+    }
+    
+    public func remove(_ component: BaseReasonComponent) {
+        if let index = nodes.firstIndex(where: { $0.id == component.id }) {
+            self.nodes.remove(at: index)
+            Log.reason.log("Removed component \(String(describing: component))")
+        } else {
+            Log.reason.warning("Can't remove component that doesn't exist: \(component.label)")
+        }
+    }
+    
+    public func remove(_ components: [BaseReasonComponent]) {
+        for component in components {
+            self.remove(component)
+        }
+    }
+    
+    // for testing purposes, be very careful
+    public func removeAll() {
+        self.nodes.removeAll()
     }
     
 }

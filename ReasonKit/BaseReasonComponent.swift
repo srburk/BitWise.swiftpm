@@ -47,8 +47,16 @@ extension BaseReasonComponent {
     }
     
     // disconnect utilities
-    public func disconnect(from targetNode: BaseReasonComponent) -> BaseReasonComponent {
-        Log.reason.warning("⚠️ BaseReasonComponent.disconnect() not implemented")
-        return self
+    public func cleanForRemoval() {
+        
+        for inputConnection in self.inputConnections {
+            inputConnection.removeConnections()
+        }
+        
+        for outputConnection in self.outputConnections {
+            outputConnection.removeConnections()
+        }
+        
+        Log.reason.log("removed node: \(self.label)")
     }
 }

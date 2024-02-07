@@ -7,32 +7,32 @@
 
 import Foundation
 
+// state machine for editing context
 final class EditorContext: ObservableObject {
         
     @Published private(set) var mode: EditingMode = .none
+    
+    // this should be private(set) in the future. For prototyping I have it as public
+    @Published public var lastTouchedComponent: BaseReasonComponent?
     
 }
 
 extension EditorContext {
     
-    public func changeMode(to newMode: EditingMode) {
+    public func tappedComponent(_ component: BaseReasonComponent) {
         
-        self.mode = newMode
-        
-        switch newMode {
-            case .none:
-                Log.editor.log("EditorContext switched to \(newMode.rawValue)")
-                break
-            case .placement:
-                Log.editor.log("EditorContext switched to \(newMode.rawValue)")
-            case .wiring:
-                Log.editor.log("EditorContext switched to \(newMode.rawValue)")
-                
-                // we need to store the last touched wire here
-                
-            case .drawing:
-                Log.editor.log("EditorContext switched to \(newMode.rawValue)")
+        if mode == .wiring {
+            
+            if let sourceComponent = lastTouchedComponent, sourceComponent.id != component.id {
+                _ = component.connect(to: sourceComponent)
+            }
+            self.mode = .none
+            
+        } else if mode == .none {
+            self.mode = .wiring
         }
+        
+        self.lastTouchedComponent = component
+
     }
-    
 }
