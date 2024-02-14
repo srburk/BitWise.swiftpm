@@ -1,1 +1,3 @@
 .swiftpm/xcode/package.xcworkspace/xcuserdata/
+.swiftpm/xcode/xcshareddata/*
+xcuserdata/*

@@ -6,6 +6,11 @@
 //
 
 import Foundation
+import SwiftUI
+
+enum EditingMode: String {
+    case none, placement, wiring, drawing // drawing is for apple pencil
+}
 
 // state machine for editing context
 final class EditorContext: ObservableObject {
@@ -36,7 +41,7 @@ extension EditorContext {
             self.mode = .none
             
         } else if mode == .none {
-            self.mode = .wiring
+            self.mode = .placement
         }
         
         self.selectedComponent = component

@@ -12,17 +12,17 @@ struct ContentView: View {
             GeometryReader { proxy in
                 
                 HStack {
-                    ScrollView(.horizontal) {
-                        VStack {
-                            Spacer()
-                            HStack {
-                                ForEach(engine.nodes, id: \.id) { node in
-                                    BaseComponentView(component: node)
-                                }
-                            }
-                            Spacer()
-                        }
-                    }
+                    
+//                    ZStack {
+                        
+//                        ForEach(engine.nodes, id: \.id) { node in
+//                            BaseComponentView(component: node)
+//                        }
+                        
+//                    }
+                    RendererView()
+                    
+                    Spacer()
                     
                     InspectorView(proxy: proxy)
                     

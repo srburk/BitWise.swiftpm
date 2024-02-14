@@ -22,19 +22,23 @@ class OutputComponent: BaseReasonComponent {
     var output: Bool = true // this is the special output component interaction (shared with inputcomponent)
     
     var processingGroup: Int = 0
-    
+        
     required init(label: String) {
         self.id = UUID()
         self.label = label
+    }
+    
+    public func compute() {
+        self.output = inputConnections.contains(where: { $0.value })
     }
     
     var shape: any Shape {
         return Rectangle()
     }
     
-    public func compute() {
-        self.output = inputConnections.contains(where: { $0.value })
-    }
+    var location: CGPoint = .zero
+    var size: CGSize = .init(width: 100, height: 100)
+    
 }
 
 extension OutputComponent {

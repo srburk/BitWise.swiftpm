@@ -15,21 +15,17 @@ class ANDGate: BaseReasonComponent {
     
     var inputCount: Int = 2
     var outputCount: Int = 1
-    
+        
     var inputConnections: [ReasonConnection]
     var outputConnections: [ReasonConnection]
     var processingGroup: Int
-    
+        
     required init(label: String) {
         self.id = UUID()
         self.label = label
         self.inputConnections = []
         self.outputConnections = []
         self.processingGroup = 0
-    }
-    
-    var shape: any Shape {
-        return Circle()
     }
     
     func compute() {
@@ -40,6 +36,12 @@ class ANDGate: BaseReasonComponent {
             outputConnection.value = value
         }
     }
+    
+    var shape: any Shape {
+        return Capsule()
+    }
+    var location: CGPoint = .zero
+    var size: CGSize = .init(width: 100, height: 100)
 }
 
 extension ANDGate {

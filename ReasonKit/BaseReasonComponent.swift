@@ -18,14 +18,17 @@ protocol BaseReasonComponent: AnyObject, CustomStringConvertible {
     
     var inputConnections: [ReasonConnection] { get set }
     var outputConnections: [ReasonConnection] { get set }
-    
+        
     var processingGroup: Int { get set } // having this stored in the node makes it easier to determine what group should have a change when connecting new child nodes
     
     init(label: String)
-    
-    var shape: any Shape { get }
-    
+        
     func compute()
+    
+    // Visuals - TODO: refactor later
+    var shape: any Shape { get }
+    var location: CGPoint { get set }
+    var size: CGSize { get set }
 }
 
 extension BaseReasonComponent {

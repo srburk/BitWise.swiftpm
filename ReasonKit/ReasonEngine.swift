@@ -9,12 +9,18 @@ import Foundation
 
 // engine for processing nodes
 final class ReasonEngine: ObservableObject {
-            
+                
     // nodes stored with graph relationship
     @Published private(set) var nodes: [BaseReasonComponent] = []
     
     // nodes in processingGroups
     private(set) var queue: [Int: [BaseReasonComponent]] = [:]
+    
+    public var renderer: ReasonRenderingEngine?
+    
+    init() {
+        self.renderer = ReasonRenderingEngine(engine: self)
+    }
 
 }
 

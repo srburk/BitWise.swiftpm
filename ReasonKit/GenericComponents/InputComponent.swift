@@ -18,7 +18,7 @@ class InputComponent: BaseReasonComponent {
     
     var inputConnections: [ReasonConnection] = []
     var outputConnections: [ReasonConnection] = []
-    
+        
     private(set) var output: Bool = true // this is the special inputcomponent interaction
     
     var processingGroup: Int = 0
@@ -37,15 +37,18 @@ class InputComponent: BaseReasonComponent {
         self.output.toggle()
     }
     
-    var shape: any Shape {
-        return Rectangle()
-    }
-    
     public func compute() {
         for outputConnection in outputConnections {
             outputConnection.value = output
         }
     }
+    
+    var shape: any Shape {
+        return Rectangle()
+    }
+    
+    var location: CGPoint = .zero
+    var size: CGSize = .init(width: 100, height: 100)
 }
 
 extension InputComponent {

@@ -14,39 +14,45 @@ struct BaseComponentView: View {
     
     @EnvironmentObject var editor: EditorContext
     
+    @State private var position: CGPoint = .zero
+    @GestureState private var startLocation: CGPoint? = nil // 1
+
     var component: BaseReasonComponent
     
-    var body: some View {
-        VStack {
-            
-            Text(component.description)
-            
-            HStack {
-                
-                Button {
-                    
-                } label: {
-                    Text("Add Input")
-                }
-                
-                Spacer()
-                
-                Button {
-                    
-                } label: {
-                    Text("Add Output")
-                }
-                
+    var simpleDrag: some Gesture {
+        DragGesture()
+            .onChanged { value in
+                var newLocation = startLocation ?? position // 3
+                newLocation.x += value.translation.width
+                newLocation.y += value.translation.height
+                self.position = newLocation
             }
-            .padding()
+//            .updating($startLocation) { (value, startLocation, transaction) in
+//                startLocation = startLocation ?? position // 2
+//            }
+    }
+    
+    var body: some View {
+//        VStack {
             
-        }
+            Text(component.label)
+            
+//        component.shape.path(in: .init(origin: .init(x: 40, y: 50), size: .init(width: 100, height: 100)))
+//                .stroke(lineWidth: 4)
+//                .foregroundStyle(.clear)
+            
+//        }
         .padding()
-        .border((editor.selectedComponent?.id == component.id) ? Color.blue : Color.primary, width: 3)
+        .frame(width: 120, height: 120)
+        .border((editor.selectedComponent?.id == component.id) ? Color.green : Color.blue, width: 3)
         
         .onTapGesture {
             editor.tappedComponent(component)
         }
+        
+        .gesture(simpleDrag)
+        .position(self.position)
+        
     }
 }
 
