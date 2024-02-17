@@ -78,7 +78,7 @@ struct ComponentView: View {
                 
                 // outputs
                 VStack(spacing: 25 * editor.canvasScale) {
-                    ForEach(0..<component.outputCount, id: \.self) { connection in
+                    ForEach(0..<component.outputCount, id: \.self) { num in
                         outputWireContact
                     }
                 }
