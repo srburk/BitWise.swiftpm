@@ -72,7 +72,13 @@ class ORGate: BaseReasonComponent {
     var position: CGPoint = .zero
 }
 
+// testing
 extension ORGate {
+    
+    func moveTo(_ point: CGPoint) {
+        self.position = point
+    }
+    
     var description: String {
         return """
         ID: \(id)

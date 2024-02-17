@@ -51,6 +51,10 @@ class InputComponent: BaseReasonComponent {
 
 extension InputComponent {
     
+    func moveTo(_ point: CGPoint) {
+        self.position = point
+    }
+    
     var description: String {
         return """
         ID: \(id)
