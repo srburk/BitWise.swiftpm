@@ -9,42 +9,70 @@ import Foundation
 import SwiftUI
 
 enum EditingMode: String {
-    case none, placement, wiring, drawing // drawing is for apple pencil
+    case none, placement, wiringInput, wiringOutput, drawing // drawing is for apple pencil
 }
 
 // state machine for editing context
 final class EditorContext: ObservableObject {
         
     @Published private(set) var mode: EditingMode = .none
+    @Published private(set) var selectedComponent: BaseReasonComponent?
     
-    // this should be private(set) in the future. For prototyping I have it as public
-    @Published public var selectedComponent: BaseReasonComponent?
+    // public variables
+    @Published public var canvasScale: CGFloat = 1.0
+    @Published public var showingInspectorView: Bool = true
     
-    // editor context will need to communicate with rendering engine for reasonkit
+    @ObservedObject private var engine: ReasonEngine
     
+    init(engine: ReasonEngine, mode: EditingMode = .none, selectedComponent: BaseReasonComponent? = nil, canvasScale: CGFloat = 1.0) {
+        self.engine = engine
+        self.mode = mode
+        self.selectedComponent = selectedComponent
+        self.canvasScale = canvasScale
+    }
 }
 
 extension EditorContext {
     
-    public func tappedComponent(_ component: BaseReasonComponent) {
+    public func tappedWireContact(_ component: BaseReasonComponent, wireContactIsInput: Bool) {
         
+        if self.mode == .wiringInput || self.mode == .wiringOutput {
+            
+            // connect these 2 components
+            if let sourceComponent = selectedComponent, sourceComponent.id != component.id {
+                if wireContactIsInput && self.mode == .wiringOutput {
+                    engine.connectComponent(component, to: sourceComponent)
+                } else {
+                    engine.connectComponent(sourceComponent, to: component)
+                }
+            }
+            self.mode = .none
+        } else {
+            self.mode = wireContactIsInput ? .wiringInput : .wiringOutput
+            self.selectedComponent = component
+        }
+        
+    }
+    
+    public func tappedComponent(_ component: BaseReasonComponent) {
+                
         // check for input to toggle based on tap
         if let input = component as? InputComponent {
             input.toggle()
         }
         
-        if mode == .wiring {
-            
-            if let sourceComponent = selectedComponent, sourceComponent.id != component.id {
-                _ = component.connect(to: sourceComponent)
-            }
+        if mode == .none {
+            // bring up context stuff for changing attributes
+        } else if mode == .placement && component.id == selectedComponent?.id {
             self.mode = .none
-            
-        } else if mode == .none {
-            self.mode = .placement
         }
         
         self.selectedComponent = component
 
+    }
+    
+    public func draggingComponent(_ component: BaseReasonComponent) {
+        self.selectedComponent = component
+        self.mode = .placement
     }
 }

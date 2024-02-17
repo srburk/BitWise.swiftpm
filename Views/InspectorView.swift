@@ -19,11 +19,15 @@ struct InspectorView: View {
     
     var body: some View {
         
-        HStack(spacing: 0) {
-            Divider()
+        HStack {
+            Spacer()
             
             ZStack {
-                Color(uiColor: .systemGray6)
+                
+                RoundedRectangle(cornerRadius: 15, style: /*@START_MENU_TOKEN@*/.continuous/*@END_MENU_TOKEN@*/)
+                    .strokeBorder(Color(uiColor: .systemGray3), lineWidth: 0.5)
+                    .background(RoundedRectangle(cornerRadius: 15, style: /*@START_MENU_TOKEN@*/.continuous/*@END_MENU_TOKEN@*/).foregroundStyle(Color(.sRGB, red: 0.97, green: 0.97, blue: 0.97)))
+//                    .foregroundStyle(Color(uiColor: .systemGray6))
             
                 ScrollView(.vertical) {
                     
@@ -47,9 +51,29 @@ struct InspectorView: View {
                             Text("Add AND Gate")
                         }
                         
+                        VStack {
+                            Text("Nodes:")
+                            
+                            ForEach(engine.nodes, id: \.id) { node in
+                                Text(node.label)
+                                    .font(.caption)
+                            }
+                        }
+                        
+                        VStack {
+                            Text("Connections:")
+                            
+                            ForEach(engine.connections, id: \.id) { connection in
+                                Text("\(connection.head.label) -> \(connection.tail.label)")
+                                    .font(.caption)
+                            }
+                        }
+                        
                         if editor.selectedComponent != nil {
                             VStack {
+                                Text("Selected Component: ")
                                 Text("\(editor.selectedComponent?.id.uuidString ?? "None")")
+                                    .font(.caption)
                             }
                         }
                     }
@@ -57,16 +81,20 @@ struct InspectorView: View {
                 .padding()
             }
             .frame(width: proxy.size.width * 0.2)
+            .padding(15)
         }
     }
 }
 
 #Preview {
-    GeometryReader { proxy in
-        HStack(spacing: 0) {
-            Spacer()
-            InspectorView(proxy: proxy)
-        }
+    
+    let engine = ReasonEngine()
+    
+    return GeometryReader { proxy in
+        InspectorView(proxy: proxy)
+            .environmentObject(engine)
+            .environmentObject(EditorContext(engine: engine))
     }
-    .ignoresSafeArea(.all, edges: /*@START_MENU_TOKEN@*/.bottom/*@END_MENU_TOKEN@*/)
+    .ignoresSafeArea(.all, edges: .bottom)
+    .toolbarBackground(.visible, for: .navigationBar)
 }

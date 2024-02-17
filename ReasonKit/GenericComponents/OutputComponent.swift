@@ -35,9 +35,7 @@ class OutputComponent: BaseReasonComponent {
     var shape: any Shape {
         return Rectangle()
     }
-    
-    var location: CGPoint = .zero
-    var size: CGSize = .init(width: 100, height: 100)
+    var position: CGPoint = .zero
     
 }
 

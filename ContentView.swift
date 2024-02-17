@@ -10,22 +10,12 @@ struct ContentView: View {
         NavigationStack {
             
             GeometryReader { proxy in
+                    
+                RendererView()
                 
-                HStack {
-                    
-//                    ZStack {
-                        
-//                        ForEach(engine.nodes, id: \.id) { node in
-//                            BaseComponentView(component: node)
-//                        }
-                        
-//                    }
-                    RendererView()
-                    
-                    Spacer()
-                    
+                if editor.showingInspectorView {
                     InspectorView(proxy: proxy)
-                    
+                        .transition(.move(edge: .trailing))
                 }
                 
             }
@@ -40,21 +30,21 @@ struct ContentView: View {
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     
                     Button {
-                        // this should be a different mechanism for when we're in placement mode, for now I just have it as wiring to make connections easier
-                        if editor.selectedComponent != nil {
-                            editor.selectedComponent!.cleanForRemoval()
-                            engine.remove(editor.selectedComponent!)
-                            editor.selectedComponent = nil
-                        }
-                    } label: {
-                        Image(systemName: "trash.fill")
-                    }
-                    
-                    Button {
                         engine.orderNodes()
                         engine.compute()
                     } label: {
                         Image(systemName: "play.fill")
+                    }
+                    
+                    Button {
+                        withAnimation {
+                            editor.showingInspectorView.toggle()
+                        }
+                    } label: {
+                        Image(systemName: "wrench.and.screwdriver.fill")
+                            .padding(5)
+                            .foregroundStyle(editor.showingInspectorView ? .white : .blue)
+                            .background(RoundedRectangle(cornerRadius: 8, style: /*@START_MENU_TOKEN@*/.continuous/*@END_MENU_TOKEN@*/).foregroundStyle(editor.showingInspectorView ? .blue : .clear))
                     }
                 }
             }
