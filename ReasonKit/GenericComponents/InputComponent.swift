@@ -6,15 +6,19 @@
 //
 
 import Foundation
+import SwiftUI
 
 class InputComponent: BaseReasonComponent {
         
     var id: UUID
     var label: String
     
+    var inputCount: Int = 0
+    var outputCount: Int = 1
+    
     var inputConnections: [ReasonConnection] = []
     var outputConnections: [ReasonConnection] = []
-    
+        
     private(set) var output: Bool = true // this is the special inputcomponent interaction
     
     var processingGroup: Int = 0
@@ -29,11 +33,20 @@ class InputComponent: BaseReasonComponent {
         return self
     }
     
+    public func toggle() {
+        self.output.toggle()
+    }
+    
     public func compute() {
         for outputConnection in outputConnections {
             outputConnection.value = output
         }
     }
+    
+    var shape: any Shape {
+        return Rectangle()
+    }
+    var position: CGPoint = .zero
 }
 
 extension InputComponent {
@@ -41,7 +54,8 @@ extension InputComponent {
     var description: String {
         return """
         ID: \(id)
-        Type: Output
+        Type: Input
+        Output: \(self.output)
         Label: \(self.label)
         Outputs: \(self.outputConnections.compactMap({ "\($0.tail.label) | \($0.value)" }))
         """

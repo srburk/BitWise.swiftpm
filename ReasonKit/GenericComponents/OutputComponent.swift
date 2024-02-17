@@ -6,11 +6,15 @@
 //
 
 import Foundation
+import SwiftUI
 
 class OutputComponent: BaseReasonComponent {
         
     var id: UUID
     var label: String
+    
+    var inputCount: Int = 1
+    var outputCount: Int = 0
     
     var inputConnections: [ReasonConnection] = []
     var outputConnections: [ReasonConnection] = []
@@ -18,7 +22,7 @@ class OutputComponent: BaseReasonComponent {
     var output: Bool = true // this is the special output component interaction (shared with inputcomponent)
     
     var processingGroup: Int = 0
-    
+        
     required init(label: String) {
         self.id = UUID()
         self.label = label
@@ -27,6 +31,12 @@ class OutputComponent: BaseReasonComponent {
     public func compute() {
         self.output = inputConnections.contains(where: { $0.value })
     }
+    
+    var shape: any Shape {
+        return Rectangle()
+    }
+    var position: CGPoint = .zero
+    
 }
 
 extension OutputComponent {

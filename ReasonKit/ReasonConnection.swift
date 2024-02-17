@@ -8,7 +8,6 @@
 import Foundation
 
 final class ReasonConnection {
-    
     let id: UUID
     
     var head: BaseReasonComponent
@@ -21,14 +20,13 @@ final class ReasonConnection {
         self.tail = tail
         self.value = value
     }
-    
 }
 
-extension ReasonConnection {
-    
-    public func removeConnections() {
-        self.tail.inputConnections.removeAll(where: { $0.id == self.id })
-        self.head.outputConnections.removeAll(where: { $0.id == self.id })
-    }
-    
-}
+//extension ReasonConnection {
+//    
+//    public func removeConnections() {
+//        self.tail.inputConnections.removeAll(where: { $0.id == self.id })
+//        self.head.outputConnections.removeAll(where: { $0.id == self.id })
+//    }
+//    
+//}

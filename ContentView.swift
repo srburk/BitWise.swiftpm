@@ -9,23 +9,17 @@ struct ContentView: View {
         
         NavigationStack {
             
-            ScrollView(.horizontal) {
-                VStack {
-                    Spacer()
-                    HStack {
-                        ForEach(engine.nodes, id: \.id) { node in
-                            Text(node.description)
-                                .padding()
-                                .border(Color.black)
-                                .onTapGesture {
-                                    editor.changeMode(to: .wiring)
-                                }
-                        }
-                    }
-                    Spacer()
+            GeometryReader { proxy in
+                    
+                RendererView()
+                
+                if editor.showingInspectorView {
+                    InspectorView(proxy: proxy)
+                        .transition(.move(edge: .trailing))
                 }
                 
             }
+            .ignoresSafeArea(.all, edges: .bottom)
             
             .toolbar {
                 
@@ -37,14 +31,20 @@ struct ContentView: View {
                     
                     Button {
                         engine.orderNodes()
+                        engine.compute()
                     } label: {
                         Image(systemName: "play.fill")
                     }
                     
                     Button {
-                        engine.add(ORGate(label: "TestORGate"))
+                        withAnimation {
+                            editor.showingInspectorView.toggle()
+                        }
                     } label: {
-                        Image(systemName: "plus")
+                        Image(systemName: "wrench.and.screwdriver.fill")
+                            .padding(5)
+                            .foregroundStyle(editor.showingInspectorView ? .white : .blue)
+                            .background(RoundedRectangle(cornerRadius: 8, style: /*@START_MENU_TOKEN@*/.continuous/*@END_MENU_TOKEN@*/).foregroundStyle(editor.showingInspectorView ? .blue : .clear))
                     }
                 }
             }
