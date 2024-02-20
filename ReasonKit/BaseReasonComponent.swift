@@ -8,6 +8,10 @@
 import Foundation
 import SwiftUI
 
+enum ReasonComponentType {
+    case input, output, other
+}
+
 protocol BaseReasonComponent: AnyObject, CustomStringConvertible {
     
     var id: UUID { get }
@@ -28,6 +32,7 @@ protocol BaseReasonComponent: AnyObject, CustomStringConvertible {
     // Visuals - TODO: refactor later
     var shape: any Shape { get }
     var position: CGPoint { get set }
+    var type: ReasonComponentType { get }
 }
 
 // MARK: Moving these to the engine

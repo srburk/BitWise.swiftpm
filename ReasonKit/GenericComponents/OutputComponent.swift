@@ -19,7 +19,7 @@ class OutputComponent: BaseReasonComponent {
     var inputConnections: [ReasonConnection] = []
     var outputConnections: [ReasonConnection] = []
     
-    var output: Bool = true // this is the special output component interaction (shared with inputcomponent)
+    var output: Bool = false // this is the special output component interaction (shared with inputcomponent)
     
     var processingGroup: Int = 0
         
@@ -31,6 +31,8 @@ class OutputComponent: BaseReasonComponent {
     public func compute() {
         self.output = inputConnections.contains(where: { $0.value })
     }
+    
+    var type: ReasonComponentType = .output
     
     var shape: any Shape {
         return Rectangle()
