@@ -16,6 +16,8 @@ struct ComponentView: View {
     
     var component: BaseReasonComponent
     
+    @State private var isShowingPopoverView: Bool = false
+    
     @State var position: CGPoint {
         didSet {
             component.position = position
@@ -54,10 +56,26 @@ struct ComponentView: View {
             }
     }
     
+    private var shapeColor: Color {
+        var returnColor = Color.gray
+        switch component.type {
+            case .input:
+                if let input = component as? InputComponent {
+                    returnColor = (input.output) ? Color.green : Color.red
+                }
+            case .output:
+                if let output = component as? OutputComponent {
+                    returnColor = (output.output) ? Color.green : Color.red
+                }
+            case .other:
+                break
+        }
+        return returnColor
+    }
+    
     var body: some View {
         
         ZStack {
-            
             HStack(spacing: 10 * editor.canvasScale) {
                 
                 // inputs
@@ -70,7 +88,7 @@ struct ComponentView: View {
                 
                 component.shape.path(in: .init(x: 0, y: 0, width: 100 * editor.canvasScale, height: 100 * editor.canvasScale))
                     .frame(width: 100 * editor.canvasScale, height: 100 * editor.canvasScale)
-                    .foregroundStyle(.gray)
+                    .foregroundStyle(shapeColor)
                 
                 .onTapGesture {
                     editor.tappedComponent(component)
@@ -89,6 +107,7 @@ struct ComponentView: View {
                 .font(.caption)
             
         }
+
         .gesture(drag)
         .position(self.position)
     }

@@ -58,6 +58,7 @@ extension EditorContext {
                 
         // check for input to toggle based on tap
         if let input = component as? InputComponent {
+            print("Toggled input")
             input.toggle()
         }
         

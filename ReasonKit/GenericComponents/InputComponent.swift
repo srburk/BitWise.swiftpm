@@ -43,8 +43,25 @@ class InputComponent: BaseReasonComponent {
         }
     }
     
+    var type: ReasonComponentType = .input
+    
     var shape: any Shape {
-        return Rectangle()
+        struct Input: Shape {
+            func path(in rect: CGRect) -> Path {
+                var path = Path()
+                let width = rect.size.width
+                let height = rect.size.height
+                path.move(to: .zero)
+                path.addLine(to: .init(x: width, y: 0))
+                path.addLine(to: .init(x: width, y: height))
+                path.addLine(to: .init(x: 0, y: height))
+                path.closeSubpath()
+                
+                return path
+            }
+            
+        }
+        return Input()
     }
     var position: CGPoint = .zero
 }

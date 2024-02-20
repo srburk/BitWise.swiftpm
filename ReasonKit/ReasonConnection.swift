@@ -12,13 +12,12 @@ final class ReasonConnection {
     
     var head: BaseReasonComponent
     var tail: BaseReasonComponent
-    var value: Bool
+    var value: Bool = false
     
-    init(head: BaseReasonComponent, tail: BaseReasonComponent, value: Bool = false) {
+    init(head: BaseReasonComponent, tail: BaseReasonComponent) {
         self.id = UUID()
         self.head = head
         self.tail = tail
-        self.value = value
     }
 }
 
