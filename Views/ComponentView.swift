@@ -24,9 +24,9 @@ struct ComponentView: View {
         }
     }
     
-    init(component: BaseReasonComponent) {
+    init(component: BaseReasonComponent, in canvas: CGSize) {
         self.component = component
-        self.position = component.position
+        self.position = CGPoint(x: canvas.width / 2, y: canvas.height / 2)
     }
     
     var drag: some Gesture {
@@ -39,25 +39,25 @@ struct ComponentView: View {
     }
     
     private var inputWireContact: some View {
-        Rectangle()
+        Circle()
             .frame(width: 20 * editor.canvasScale, height: 20 * editor.canvasScale)
-            .foregroundStyle(.red)
+            .foregroundStyle(.gray)
             .onTapGesture {
                 editor.tappedWireContact(component, wireContactIsInput: true)
             }
     }
     
     private var outputWireContact: some View {
-        Rectangle()
+        Circle()
             .frame(width: 20 * editor.canvasScale, height: 20 * editor.canvasScale)
-            .foregroundStyle(.blue)
+            .foregroundStyle(.gray)
             .onTapGesture {
                 editor.tappedWireContact(component, wireContactIsInput: false)
             }
     }
     
     private var shapeColor: Color {
-        var returnColor = Color.gray
+        var returnColor = Color(uiColor: .systemGray5)
         switch component.type {
             case .input:
                 if let input = component as? InputComponent {
@@ -89,6 +89,12 @@ struct ComponentView: View {
                 component.shape.path(in: .init(x: 0, y: 0, width: 100 * editor.canvasScale, height: 100 * editor.canvasScale))
                     .frame(width: 100 * editor.canvasScale, height: 100 * editor.canvasScale)
                     .foregroundStyle(shapeColor)
+                    .overlay {
+                        if (editor.selectedComponent?.id == component.id) {
+                            component.shape.path(in: .init(x: 0, y: 0, width: 100 * editor.canvasScale, height: 100 * editor.canvasScale))
+                                .stroke(Color.blue, style: .init(lineWidth: 3, lineCap: .round, lineJoin: .bevel, miterLimit: 0.0, dash: [5, 10], dashPhase: 0.0))
+                        }
+                    }
                 
                 .onTapGesture {
                     editor.tappedComponent(component)
@@ -103,8 +109,8 @@ struct ComponentView: View {
                 .frame(height: 55 * editor.canvasScale)
             }
             
-            Text("Group: \(component.processingGroup)")
-                .font(.caption)
+//            Text("Group: \(component.processingGroup)")
+//                .font(.caption)
             
         }
 
@@ -115,7 +121,7 @@ struct ComponentView: View {
 
 #Preview {
     GeometryReader { context in
-        ComponentView(component: ORGate(label: "ORGatePreview"))
+        ComponentView(component: ORGate(label: "ORGatePreview"), in: context.size)
 //        ComponentView(component: ORGate(label: "ORGatePreview"), position: .init(x: context.size.width / 2, y: context.size.height / 2))
             .environmentObject(EditorContext(engine: ReasonEngine(), canvasScale: 3.0))
     }

@@ -33,10 +33,10 @@ struct RendererView: View {
         // composite view of pencil layer, text layer, and component layer, in that order
         VStack {
                         
-            ZStack {
+            GeometryReader { context in
                 
                 ForEach(engine.nodes, id: \.id) { component in
-                    ComponentView(component: component)
+                    ComponentView(component: component, in: context.size)
                 }
                 
                 ForEach(engine.connections, id: \.id) { connection in

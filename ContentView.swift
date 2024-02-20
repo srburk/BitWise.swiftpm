@@ -46,6 +46,15 @@ struct ContentView: View {
                             .foregroundStyle(editor.showingInspectorView ? .white : .blue)
                             .background(RoundedRectangle(cornerRadius: 8, style: /*@START_MENU_TOKEN@*/.continuous/*@END_MENU_TOKEN@*/).foregroundStyle(editor.showingInspectorView ? .blue : .clear))
                     }
+                    
+                    Button {
+                        // show inspector view
+                    } label: {
+                        Image(systemName: "info.circle")
+                            .padding(5)
+                            .foregroundStyle(editor.showingInspectorView ? .white : .blue)
+                            .background(RoundedRectangle(cornerRadius: 8, style: /*@START_MENU_TOKEN@*/.continuous/*@END_MENU_TOKEN@*/).foregroundStyle(editor.showingInspectorView ? .blue : .clear))
+                    }
                 }
             }
             
