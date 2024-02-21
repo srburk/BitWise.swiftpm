@@ -14,18 +14,13 @@ class ORGate: BaseReasonComponent {
     
     var label: String
     
-    var inputCount: Int = 2
-    var outputCount: Int = 1
-    
-    var inputConnections: [ReasonConnection]
-    var outputConnections: [ReasonConnection]
+    var inputConnections: [ComponentConnector] = [.input, .input]
+    var outputConnections: [ComponentConnector] = [.init(type: .output)]
     var processingGroup: Int
         
     required init(label: String) {
         self.id = UUID()
         self.label = label
-        self.inputConnections = []
-        self.outputConnections = []
         self.processingGroup = 0
     }
     
@@ -40,7 +35,7 @@ class ORGate: BaseReasonComponent {
 
         // there could be more logic for this based on what kind of output should exist
         for outputConnection in self.outputConnections {
-            outputConnection.value = value
+            outputConnection.setValue(value)
         }
     }
     
@@ -60,15 +55,15 @@ extension ORGate {
     }
     
     var description: String {
-        return """
-        ID: \(id)
-        Type: OR Gate
-        Label: \(self.label)
-        InputCount: \(self.inputCount)
-        OutputCount: \(self.outputCount)
-        Inputs: \(self.inputConnections.compactMap({ "\($0.head.label) | \($0.value)" }))
-        Outputs: \(self.outputConnections.compactMap({ "\($0.tail.label) | \($0.value)" }))
-        ProcessingGroup: \(self.processingGroup)
-        """
+        return "OR gate"
+//        ID: \(id)
+//        Type: OR Gate
+//        Label: \(self.label)
+//        InputCount: \(self.inputCount)
+//        OutputCount: \(self.outputCount)
+//        Inputs: \(self.inputConnections.compactMap({ "\($0.head.label) | \($0.value)" }))
+//        Outputs: \(self.outputConnections.compactMap({ "\($0.tail.label) | \($0.value)" }))
+//        ProcessingGroup: \(self.processingGroup)
+//        """
     }
 }

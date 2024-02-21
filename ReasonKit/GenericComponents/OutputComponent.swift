@@ -13,11 +13,8 @@ class OutputComponent: BaseReasonComponent {
     var id: UUID
     var label: String
     
-    var inputCount: Int = 1
-    var outputCount: Int = 0
-    
-    var inputConnections: [ReasonConnection] = []
-    var outputConnections: [ReasonConnection] = []
+    var inputConnections: [ComponentConnector] = [.input]
+    var outputConnections: [ComponentConnector] = []
     
     var output: Bool = false // this is the special output component interaction (shared with inputcomponent)
     
@@ -44,11 +41,11 @@ class OutputComponent: BaseReasonComponent {
 extension OutputComponent {
     
     var description: String {
-        return """
-        ID: \(id)
-        Type: Output
-        Label: \(self.label)
-        Inputs: \(self.inputConnections.compactMap({ "\($0.head.label) | \($0.value)" }))
-        """
+        return "Output"
+//        ID: \(id)
+//        Type: Output
+//        Label: \(self.label)
+//        Inputs: \(self.inputConnections.compactMap({ "\($0.head.label) | \($0.value)" }))
+//        """
     }
 }

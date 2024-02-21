@@ -13,11 +13,8 @@ class InputComponent: BaseReasonComponent {
     var id: UUID
     var label: String
     
-    var inputCount: Int = 0
-    var outputCount: Int = 1
-    
-    var inputConnections: [ReasonConnection] = []
-    var outputConnections: [ReasonConnection] = []
+    var inputConnections: [ComponentConnector] = []
+    var outputConnections: [ComponentConnector] = [.output]
         
     private(set) var output: Bool = true // this is the special inputcomponent interaction
     
@@ -39,7 +36,7 @@ class InputComponent: BaseReasonComponent {
     
     public func compute() {
         for outputConnection in outputConnections {
-            outputConnection.value = output
+            outputConnection.setValue(self.output)
         }
     }
     
@@ -73,12 +70,12 @@ extension InputComponent {
     }
     
     var description: String {
-        return """
-        ID: \(id)
-        Type: Input
-        Output: \(self.output)
-        Label: \(self.label)
-        Outputs: \(self.outputConnections.compactMap({ "\($0.tail.label) | \($0.value)" }))
-        """
+        return "Input"
+//        ID: \(id)
+//        Type: Input
+//        Output: \(self.output)
+//        Label: \(self.label)
+//        Outputs: \(self.outputConnections.compactMap({ "\($0.tail.label) | \($0.value)" }))
+//        """
     }
 }

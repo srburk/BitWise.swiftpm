@@ -26,7 +26,11 @@ struct ComponentView: View {
     
     init(component: BaseReasonComponent, in canvas: CGSize) {
         self.component = component
-        self.position = CGPoint(x: canvas.width / 2, y: canvas.height / 2)
+        if component.position == .zero {
+            self.position = CGPoint(x: canvas.width / 2, y: canvas.height / 2)
+        } else {
+            self.position = component.position
+        }
     }
     
     var drag: some Gesture {
@@ -38,21 +42,26 @@ struct ComponentView: View {
             }
     }
     
-    private var inputWireContact: some View {
-        Circle()
-            .frame(width: 20 * editor.canvasScale, height: 20 * editor.canvasScale)
-            .foregroundStyle(.gray)
-            .onTapGesture {
-                editor.tappedWireContact(component, wireContactIsInput: true)
+    private func wireContact(_ connector: ComponentConnector) -> some View {
+        
+        var color: Color = Color.gray
+        
+        if editor.mode == .wiring && editor.selectedComponent?.id != self.component.id {
+            if editor.lastTappedWireContact?.type == .input {
+                color = (connector.type == .output) ? Color.green : Color.gray
+            } else {
+                // output was last, highlight inputs
+                color = (connector.type == .input) ? Color.green : Color.gray
             }
-    }
-    
-    private var outputWireContact: some View {
-        Circle()
+        } else if editor.mode == .wiring {
+            color = (editor.lastTappedWireContact?.id == connector.id) ? Color.blue : Color.gray
+        }
+        
+        return Circle()
             .frame(width: 20 * editor.canvasScale, height: 20 * editor.canvasScale)
-            .foregroundStyle(.gray)
+            .foregroundStyle(color)
             .onTapGesture {
-                editor.tappedWireContact(component, wireContactIsInput: false)
+                editor.tappedWireContact(component, contact: connector)
             }
     }
     
@@ -80,8 +89,8 @@ struct ComponentView: View {
                 
                 // inputs
                 VStack(spacing: 25 * editor.canvasScale) {
-                    ForEach(0..<component.inputCount, id: \.self) { connection in
-                        inputWireContact
+                    ForEach(component.inputConnections, id: \.id) { connector in
+                        wireContact(connector)
                     }
                 }
                 .frame(height: 55 * editor.canvasScale)
@@ -102,8 +111,8 @@ struct ComponentView: View {
                 
                 // outputs
                 VStack(spacing: 25 * editor.canvasScale) {
-                    ForEach(0..<component.outputCount, id: \.self) { num in
-                        outputWireContact
+                    ForEach(component.outputConnections, id: \.id) { connector in
+                        wireContact(connector)
                     }
                 }
                 .frame(height: 55 * editor.canvasScale)

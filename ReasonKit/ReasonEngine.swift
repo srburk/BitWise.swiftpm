@@ -23,33 +23,57 @@ final class ReasonEngine: ObservableObject {
 
 extension ReasonEngine {
     
-    public func connectComponent(_ component: BaseReasonComponent, to targetNode: BaseReasonComponent, asInput: Bool = false) {
-        if asInput {
-            if component.outputConnections.count < component.outputCount && targetNode.inputConnections.count < targetNode.inputCount {
-                let newConnection = ReasonConnection(head: component, tail: targetNode)
-                component.outputConnections.append(newConnection)
-                targetNode.inputConnections.append(newConnection)
-                self.connections.append(newConnection)
-            } else {
-                Log.reason.warning("\(component.id) can't be inputted in to \(targetNode.id)")
-            }
+    /// automatically figure out which is input and which is output
+    public func connectComponent(_ component1: BaseReasonComponent, component2: BaseReasonComponent, connector1: ComponentConnector, connector2: ComponentConnector) {
+        if connector1.type != connector2.type {
+            
+            print("Connector 1 is \(connector1.type.rawValue)")
+            print("Connector 2 is \(connector2.type.rawValue)")
+            
+            let inputComponent = (connector1.type == .input) ? component2 : component1
+            let outputComponent = (connector1.type == .input) ? component1 : component2
+            
+            let newConnection = ReasonConnection(head: inputComponent, tail: outputComponent)
+            
+            connector1.connection = newConnection
+            connector2.connection = newConnection
+            
+            self.connections.append(newConnection)
+            Log.reason.log("Connection Formed from \(inputComponent.description) to \(outputComponent.description)")
+            
         } else {
-            if component.inputConnections.count < component.inputCount && targetNode.outputConnections.count < targetNode.outputCount {
-                let newConnection = ReasonConnection(head: targetNode, tail: component)
-                component.inputConnections.append(newConnection)
-                targetNode.outputConnections.append(newConnection)
-                self.connections.append(newConnection)
-            } else {
-                Log.reason.warning("\(targetNode.id) can't be inputted in to \(component.id)")
-            }
+            Log.reason.error("Both connectors are the same type")
         }
     }
+//        if asInput {
+//            if component.outputConnections.count < component.outputConnections.count && targetNode.inputConnections.count < targetNode.inputConnections.count {
+//                let newConnection = ReasonConnection(head: component, tail: targetNode)
+//                
+//                component.outputConnections
+//                component.outputConnections.append(newConnection)
+//                targetNode.inputConnections.append(newConnection)
+//                
+//                self.connections.append(newConnection)
+//            } else {
+//                Log.reason.warning("\(component.id) can't be inputted in to \(targetNode.id)")
+//            }
+//        } else {
+//            if component.inputConnections.count < component.inputCount && targetNode.outputConnections.count < targetNode.outputCount {
+//                let newConnection = ReasonConnection(head: targetNode, tail: component)
+//                component.inputConnections.append(newConnection)
+//                targetNode.outputConnections.append(newConnection)
+//                self.connections.append(newConnection)
+//            } else {
+//                Log.reason.warning("\(targetNode.id) can't be inputted in to \(component.id)")
+//            }
+//        }
+//    }
     
-    public func connectComponent(_ component: BaseReasonComponent, to targetNodes: [BaseReasonComponent], asInputs: Bool = false) {
-        for node in targetNodes {
-            self.connectComponent(component, to: node, asInput: asInputs)
-        }
-    }
+//    public func connectComponent(_ component: BaseReasonComponent, to targetNodes: [BaseReasonComponent], asInputs: Bool = false) {
+//        for node in targetNodes {
+//            self.connectComponent(component, to: node, asInput: asInputs)
+//        }
+//    }
     
     // go through queue and compute
     public func compute() {
@@ -88,7 +112,7 @@ extension ReasonEngine {
 
                 node.processingGroup = level
                 
-                for child in node.outputConnections {
+                for child in node.outputConnections.compactMap({ $0.connection }) {
                     traverseNode(child.tail, level: level + 1)
                 }
             }
@@ -129,40 +153,40 @@ extension ReasonEngine {
         }
     }
     
-    public func removeConnection(_ connection: ReasonConnection) {
-        if let connectionIndex = self.connections.firstIndex(where: { $0.id == connection.id }) {
-            self.connections.remove(at: connectionIndex)
-            connection.tail.inputConnections.removeAll(where: { $0.id == connection.id })
-            connection.head.outputConnections.removeAll(where: { $0.id == connection.id })
-        } else {
-            Log.reason.error("Connection \(connection.id) does not exist")
-        }
-    }
+//    public func removeConnection(_ connection: ReasonConnection) {
+//        if let connectionIndex = self.connections.firstIndex(where: { $0.id == connection.id }) {
+//            self.connections.remove(at: connectionIndex)
+//            connection.tail.inputConnections.removeAll(where: { $0.id == connection.id })
+//            connection.head.outputConnections.removeAll(where: { $0.id == connection.id })
+//        } else {
+//            Log.reason.error("Connection \(connection.id) does not exist")
+//        }
+//    }
     
-    public func remove(_ component: BaseReasonComponent) {
-        
-        for inputConnection in component.inputConnections {
-            self.removeConnection(inputConnection)
-        }
-        
-        for outputConnection in component.outputConnections {
-            self.removeConnection(outputConnection)
-        }
-        
-        Log.reason.log("removed node: \(component.label)")
-        if let index = nodes.firstIndex(where: { $0.id == component.id }) {
-            self.nodes.remove(at: index)
-            Log.reason.log("Removed component \(String(describing: component))")
-        } else {
-            Log.reason.warning("Can't remove component that doesn't exist: \(component.label)")
-        }
-    }
+//    public func remove(_ component: BaseReasonComponent) {
+//        
+//        for inputConnection in component.inputConnections {
+//            self.removeConnection(inputConnection)
+//        }
+//        
+//        for outputConnection in component.outputConnections {
+//            self.removeConnection(outputConnection)
+//        }
+//        
+//        Log.reason.log("removed node: \(component.label)")
+//        if let index = nodes.firstIndex(where: { $0.id == component.id }) {
+//            self.nodes.remove(at: index)
+//            Log.reason.log("Removed component \(String(describing: component))")
+//        } else {
+//            Log.reason.warning("Can't remove component that doesn't exist: \(component.label)")
+//        }
+//    }
     
-    public func remove(_ components: [BaseReasonComponent]) {
-        for component in components {
-            self.remove(component)
-        }
-    }
+//    public func remove(_ components: [BaseReasonComponent]) {
+//        for component in components {
+//            self.remove(component)
+//        }
+//    }
     
     // for testing purposes, be very careful
     public func removeAll() {

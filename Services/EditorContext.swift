@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 enum EditingMode: String {
-    case none, placement, wiringInput, wiringOutput, drawing // drawing is for apple pencil
+    case none, placement, wiring, drawing // drawing is for apple pencil
 }
 
 // state machine for editing context
@@ -17,6 +17,7 @@ final class EditorContext: ObservableObject {
         
     @Published private(set) var mode: EditingMode = .none
     @Published private(set) var selectedComponent: BaseReasonComponent?
+    @Published private(set) var lastTappedWireContact: ComponentConnector?
     
     // public variables
     @Published public var canvasScale: CGFloat = 1.0
@@ -34,21 +35,25 @@ final class EditorContext: ObservableObject {
 
 extension EditorContext {
     
-    public func tappedWireContact(_ component: BaseReasonComponent, wireContactIsInput: Bool) {
+    public func tappedWireContact(_ component: BaseReasonComponent, contact: ComponentConnector) {
         
-        if self.mode == .wiringInput || self.mode == .wiringOutput {
+        if self.mode == .wiring {
             
             // connect these 2 components
-            if let sourceComponent = selectedComponent, sourceComponent.id != component.id {
-                if wireContactIsInput && self.mode == .wiringOutput {
-                    engine.connectComponent(component, to: sourceComponent)
-                } else {
-                    engine.connectComponent(sourceComponent, to: component)
-                }
+            if let sourceComponent = selectedComponent, let sourceContact = self.lastTappedWireContact, sourceComponent.id != component.id {
+//                if wireContactIsInput && self.mode == .wiringOutput {
+//                    engine.connectComponent(component, to: sourceComponent)
+//                } else {
+//                    engine.connectComponent(sourceComponent, to: component)
+//                }
+                
+                engine.connectComponent(component, component2: sourceComponent, connector1: contact, connector2: sourceContact)
+                
             }
             self.mode = .none
         } else {
-            self.mode = wireContactIsInput ? .wiringInput : .wiringOutput
+            self.mode = .wiring
+            self.lastTappedWireContact = contact
             self.selectedComponent = component
         }
         
