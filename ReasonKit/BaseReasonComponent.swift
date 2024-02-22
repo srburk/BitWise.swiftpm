@@ -17,11 +17,8 @@ protocol BaseReasonComponent: AnyObject, CustomStringConvertible {
     var id: UUID { get }
     var label: String { get set }
     
-    var inputCount: Int { get set }
-    var outputCount: Int { get set }
-    
-    var inputConnections: [ReasonConnection] { get set }
-    var outputConnections: [ReasonConnection] { get set }
+    var inputConnections: [ComponentConnector] { get set }
+    var outputConnections: [ComponentConnector] { get set }
     
     var processingGroup: Int { get set } // having this stored in the node makes it easier to determine what group should have a change when connecting new child nodes
     

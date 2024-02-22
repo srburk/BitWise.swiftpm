@@ -13,6 +13,7 @@ import SwiftUI
 struct ComponentView: View {
     
     @EnvironmentObject var editor: EditorContext
+    @EnvironmentObject var engine: ReasonEngine
     
     var component: BaseReasonComponent
     
@@ -26,7 +27,11 @@ struct ComponentView: View {
     
     init(component: BaseReasonComponent, in canvas: CGSize) {
         self.component = component
-        self.position = CGPoint(x: canvas.width / 2, y: canvas.height / 2)
+        if component.position == .zero {
+            self.position = CGPoint(x: canvas.width / 2, y: canvas.height / 2)
+        } else {
+            self.position = component.position
+        }
     }
     
     var drag: some Gesture {
@@ -38,22 +43,54 @@ struct ComponentView: View {
             }
     }
     
-    private var inputWireContact: some View {
-        Circle()
-            .frame(width: 20 * editor.canvasScale, height: 20 * editor.canvasScale)
-            .foregroundStyle(.gray)
-            .onTapGesture {
-                editor.tappedWireContact(component, wireContactIsInput: true)
+    private struct WireContact: View {
+        
+        @EnvironmentObject var editor: EditorContext
+        @EnvironmentObject var engine: ReasonEngine
+        
+        @State var isShowingPopup: Bool = false
+        
+        var connector: ComponentConnector
+        var component: BaseReasonComponent
+        
+        init(connector: ComponentConnector, component: BaseReasonComponent) {
+            self.connector = connector
+            self.component = component
+        }
+        
+        var color: Color {
+            var temp = (editor.lastTappedWireContact?.id == connector.id && editor.mode == .wiring) ? .blue : Color.gray
+            if editor.mode == .wiring && editor.selectedComponent?.id != self.component.id {
+                temp = editor.isValidWireContact(contact: connector) ? .green : .gray
             }
-    }
-    
-    private var outputWireContact: some View {
-        Circle()
-            .frame(width: 20 * editor.canvasScale, height: 20 * editor.canvasScale)
-            .foregroundStyle(.gray)
-            .onTapGesture {
-                editor.tappedWireContact(component, wireContactIsInput: false)
+            return temp
+        }
+        
+        var body: some View {
+            VStack {
+                Circle()
+                    .frame(width: 20 * editor.canvasScale, height: 20 * editor.canvasScale)
+                    .foregroundStyle(color)
+                    .onTapGesture {
+                        editor.tappedWireContact(component, contact: connector)
+                    }
+                    .onLongPressGesture {
+                        if connector.connection != nil {
+                            self.isShowingPopup = true
+                        }
+                    }
+                    .popover(isPresented: $isShowingPopup, attachmentAnchor: .point(.center), arrowEdge: .bottom) {
+                        Button(role: .destructive) {
+                            if let connection = connector.connection {
+                                engine.removeConnection(connection)
+                            }
+                        } label: {
+                            Label("Remove Connection", systemImage: "trash")
+                                .padding([.leading, .trailing], 15)
+                        }
+                    }
             }
+        }
     }
     
     private var shapeColor: Color {
@@ -80,8 +117,8 @@ struct ComponentView: View {
                 
                 // inputs
                 VStack(spacing: 25 * editor.canvasScale) {
-                    ForEach(0..<component.inputCount, id: \.self) { connection in
-                        inputWireContact
+                    ForEach(component.inputConnections, id: \.id) { connector in
+                        WireContact(connector: connector, component: self.component)
                     }
                 }
                 .frame(height: 55 * editor.canvasScale)
@@ -102,8 +139,8 @@ struct ComponentView: View {
                 
                 // outputs
                 VStack(spacing: 25 * editor.canvasScale) {
-                    ForEach(0..<component.outputCount, id: \.self) { num in
-                        outputWireContact
+                    ForEach(component.outputConnections, id: \.id) { connector in
+                        WireContact(connector: connector, component: self.component)
                     }
                 }
                 .frame(height: 55 * editor.canvasScale)
