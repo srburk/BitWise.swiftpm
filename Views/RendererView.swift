@@ -35,10 +35,6 @@ struct RendererView: View {
                         
             GeometryReader { context in
                 
-                ForEach(engine.nodes, id: \.id) { component in
-                    ComponentView(component: component, in: context.size)
-                }
-                
                 ForEach(engine.connections, id: \.id) { connection in
                     Path { path in
         //                        for connection in engine.connections {
@@ -67,6 +63,10 @@ struct RendererView: View {
         //                        }
                     }
                     .stroke((connection.value) ? .green : .gray, style: .init(lineWidth: 5, lineCap: .round, lineJoin: .round, miterLimit: 0.0, dash: [], dashPhase: 0))
+                }
+                
+                ForEach(engine.nodes, id: \.id) { component in
+                    ComponentView(component: component, in: context.size)
                 }
             }
             .drawingGroup() // high performance drawing

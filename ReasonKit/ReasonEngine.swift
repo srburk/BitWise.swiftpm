@@ -152,15 +152,17 @@ extension ReasonEngine {
         }
     }
     
-//    public func removeConnection(_ connection: ReasonConnection) {
-//        if let connectionIndex = self.connections.firstIndex(where: { $0.id == connection.id }) {
-//            self.connections.remove(at: connectionIndex)
-//            connection.tail.inputConnections.removeAll(where: { $0.id == connection.id })
-//            connection.head.outputConnections.removeAll(where: { $0.id == connection.id })
-//        } else {
-//            Log.reason.error("Connection \(connection.id) does not exist")
-//        }
-//    }
+    public func removeConnection(_ connection: ReasonConnection) {
+        if let connectionIndex = self.connections.firstIndex(where: { $0.id == connection.id }) {
+            self.connections.remove(at: connectionIndex)
+            let input = connection.tail.inputConnections.first(where: { $0.connection?.id == connection.id })
+            input?.connection = nil
+            let output = connection.head.outputConnections.first(where: { $0.connection?.id == connection.id })
+            output?.connection = nil
+        } else {
+            Log.reason.error("Connection \(connection.id) does not exist")
+        }
+    }
     
 //    public func remove(_ component: BaseReasonComponent) {
 //        

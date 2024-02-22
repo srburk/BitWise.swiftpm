@@ -13,6 +13,7 @@ import SwiftUI
 struct ComponentView: View {
     
     @EnvironmentObject var editor: EditorContext
+    @EnvironmentObject var engine: ReasonEngine
     
     var component: BaseReasonComponent
     
@@ -42,21 +43,53 @@ struct ComponentView: View {
             }
     }
     
-    private func wireContact(_ connector: ComponentConnector) -> some View {
+    private struct WireContact: View {
         
-        var color: Color = (editor.lastTappedWireContact?.id == connector.id && editor.mode == .wiring) ? .blue : Color.gray
+        @EnvironmentObject var editor: EditorContext
+        @EnvironmentObject var engine: ReasonEngine
         
-        if editor.mode == .wiring && editor.selectedComponent?.id != self.component.id {
-            color = editor.isValidWireContact(contact: connector) ? .green : .gray
+        @State var isShowingPopup: Bool = false
+        
+        var connector: ComponentConnector
+        var component: BaseReasonComponent
+        
+        init(connector: ComponentConnector, component: BaseReasonComponent) {
+            self.connector = connector
+            self.component = component
         }
         
-        return VStack {
-            Circle()
-                .frame(width: 20 * editor.canvasScale, height: 20 * editor.canvasScale)
-                .foregroundStyle(color)
-                .onTapGesture {
-                    editor.tappedWireContact(component, contact: connector)
-                }
+        var color: Color {
+            var temp = (editor.lastTappedWireContact?.id == connector.id && editor.mode == .wiring) ? .blue : Color.gray
+            if editor.mode == .wiring && editor.selectedComponent?.id != self.component.id {
+                temp = editor.isValidWireContact(contact: connector) ? .green : .gray
+            }
+            return temp
+        }
+        
+        var body: some View {
+            VStack {
+                Circle()
+                    .frame(width: 20 * editor.canvasScale, height: 20 * editor.canvasScale)
+                    .foregroundStyle(color)
+                    .onTapGesture {
+                        editor.tappedWireContact(component, contact: connector)
+                    }
+                    .onLongPressGesture {
+                        if connector.connection != nil {
+                            self.isShowingPopup = true
+                        }
+                    }
+                    .popover(isPresented: $isShowingPopup, attachmentAnchor: .point(.center), arrowEdge: .bottom) {
+                        Button(role: .destructive) {
+                            if let connection = connector.connection {
+                                engine.removeConnection(connection)
+                            }
+                        } label: {
+                            Label("Remove Connection", systemImage: "trash")
+                                .padding([.leading, .trailing], 15)
+                        }
+                    }
+            }
         }
     }
     
@@ -85,7 +118,7 @@ struct ComponentView: View {
                 // inputs
                 VStack(spacing: 25 * editor.canvasScale) {
                     ForEach(component.inputConnections, id: \.id) { connector in
-                        wireContact(connector)
+                        WireContact(connector: connector, component: self.component)
                     }
                 }
                 .frame(height: 55 * editor.canvasScale)
@@ -107,7 +140,7 @@ struct ComponentView: View {
                 // outputs
                 VStack(spacing: 25 * editor.canvasScale) {
                     ForEach(component.outputConnections, id: \.id) { connector in
-                        wireContact(connector)
+                        WireContact(connector: connector, component: self.component)
                     }
                 }
                 .frame(height: 55 * editor.canvasScale)
