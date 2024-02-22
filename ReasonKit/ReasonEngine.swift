@@ -44,7 +44,7 @@ extension ReasonEngine {
         } else {
             Log.reason.error("Both connectors are the same type")
         }
-    }
+    } 
 //        if asInput {
 //            if component.outputConnections.count < component.outputConnections.count && targetNode.inputConnections.count < targetNode.inputConnections.count {
 //                let newConnection = ReasonConnection(head: component, tail: targetNode)
@@ -116,7 +116,6 @@ extension ReasonEngine {
                     traverseNode(child.tail, level: level + 1)
                 }
             }
-            
             return
         }
         

@@ -71,6 +71,10 @@ struct InspectorView: View {
                         addComponentCell(text: "OR Gate", shape: ORShape()) {
                             engine.add(ORGate(label: "ORGate"))
                         }
+                        
+                        addComponentCell(text: "NOT Gate", shape: NOTShape()) {
+                            engine.add(NOTGate(label: "NOTGate"))
+                        }
                     }
                 }
                 .padding()

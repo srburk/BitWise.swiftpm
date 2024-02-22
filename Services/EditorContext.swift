@@ -35,9 +35,24 @@ final class EditorContext: ObservableObject {
 
 extension EditorContext {
     
+    public func isValidWireContact(contact: ComponentConnector) -> Bool {
+        
+        if let lastContact = lastTappedWireContact {
+            if lastContact.type == .input {
+                return contact.type == .output && contact.connection == nil
+            } else {
+                return contact.type == .input && contact.connection == nil
+            }
+        } else {
+            return false
+        }
+    }
+    
     public func tappedWireContact(_ component: BaseReasonComponent, contact: ComponentConnector) {
         
         if self.mode == .wiring {
+            
+            guard self.isValidWireContact(contact: contact) else { Log.editor.error("Contact point not valid") ; return }
             
             // connect these 2 components
             if let sourceComponent = selectedComponent, let sourceContact = self.lastTappedWireContact, sourceComponent.id != component.id {

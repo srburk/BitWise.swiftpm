@@ -44,25 +44,20 @@ struct ComponentView: View {
     
     private func wireContact(_ connector: ComponentConnector) -> some View {
         
-        var color: Color = Color.gray
+        var color: Color = (editor.lastTappedWireContact?.id == connector.id && editor.mode == .wiring) ? .blue : Color.gray
         
         if editor.mode == .wiring && editor.selectedComponent?.id != self.component.id {
-            if editor.lastTappedWireContact?.type == .input {
-                color = (connector.type == .output) ? Color.green : Color.gray
-            } else {
-                // output was last, highlight inputs
-                color = (connector.type == .input) ? Color.green : Color.gray
-            }
-        } else if editor.mode == .wiring {
-            color = (editor.lastTappedWireContact?.id == connector.id) ? Color.blue : Color.gray
+            color = editor.isValidWireContact(contact: connector) ? .green : .gray
         }
         
-        return Circle()
-            .frame(width: 20 * editor.canvasScale, height: 20 * editor.canvasScale)
-            .foregroundStyle(color)
-            .onTapGesture {
-                editor.tappedWireContact(component, contact: connector)
-            }
+        return VStack {
+            Circle()
+                .frame(width: 20 * editor.canvasScale, height: 20 * editor.canvasScale)
+                .foregroundStyle(color)
+                .onTapGesture {
+                    editor.tappedWireContact(component, contact: connector)
+                }
+        }
     }
     
     private var shapeColor: Color {

@@ -51,10 +51,17 @@ struct RendererView: View {
                             let inputContact = connection.head.position.applying(.init(translationX: 50 + 20, y: 0))
                             var outputContact = connection.tail.position
                             
-                            // we have to figure out which input this is (only up to 2 for right now
-                        if let outputNum = connection.tail.inputConnections.firstIndex(where: { $0.connection?.id == connection.id }) {
+                        if connection.tail.inputConnections.count > 1 {
+                            if let outputNum = connection.tail.inputConnections.firstIndex(where: { $0.connection?.id == connection.id }) {
                                 outputContact = outputContact.applying(.init(translationX: -50 - 20, y: CGFloat((outputNum * 50) - 25)))
                             }
+                        } else {
+                            outputContact = outputContact.applying(.init(translationX: -70, y: 0))
+                        }
+                            // we have to figure out which input this is (only up to 2 for right now
+//                        if let outputNum = connection.tail.inputConnections.firstIndex(where: { $0.connection?.id == connection.id }) {
+//                                outputContact = outputContact.applying(.init(translationX: -50 - 20, y: CGFloat((outputNum * 50) - 25)))
+//                            }
                             path.move(to: inputContact)
                             path.addQuadCurve(to: outputContact, control: controlPoint)
         //                        }
