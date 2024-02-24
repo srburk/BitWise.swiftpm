@@ -139,7 +139,7 @@ extension ReasonEngine {
     
     public func add(_ component: BaseReasonComponent) {
         guard !self.nodes.contains(where: { $0.id == component.id }) else {
-            Log.reason.warning("Can't add duplicate of component \(component.label)")
+            Log.reason.warning("Can't add duplicate of component \(component.id.uuidString)")
             return
         }
         self.nodes.append(component)
@@ -192,6 +192,7 @@ extension ReasonEngine {
     // for testing purposes, be very careful
     public func removeAll() {
         self.nodes.removeAll()
+        self.connections.removeAll()
     }
     
 }

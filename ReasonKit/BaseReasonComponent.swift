@@ -15,14 +15,13 @@ enum ReasonComponentType {
 protocol BaseReasonComponent: AnyObject, CustomStringConvertible {
     
     var id: UUID { get }
-    var label: String { get set }
     
     var inputConnections: [ComponentConnector] { get set }
     var outputConnections: [ComponentConnector] { get set }
     
     var processingGroup: Int { get set } // having this stored in the node makes it easier to determine what group should have a change when connecting new child nodes
     
-    init(label: String)
+    init(position: CGPoint)
     
     func compute()
     

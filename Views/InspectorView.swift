@@ -57,23 +57,23 @@ struct InspectorView: View {
                             .foregroundStyle(.gray)
                         
                         addComponentCell(text: "Input", shape: Rectangle()) {
-                            engine.add(InputComponent(label: "Input"))
+                            engine.add(InputComponent())
                         }
                         
                         addComponentCell(text: "Output", shape: Rectangle()) {
-                            engine.add(OutputComponent(label: "Output"))
+                            engine.add(OutputComponent())
                         }
                         
                         addComponentCell(text: "AND Gate", shape: ANDShape()) {
-                            engine.add(ANDGate(label: "AndGate"))
+                            engine.add(ANDGate())
                         }
                         
                         addComponentCell(text: "OR Gate", shape: ORShape()) {
-                            engine.add(ORGate(label: "ORGate"))
+                            engine.add(ORGate())
                         }
                         
                         addComponentCell(text: "NOT Gate", shape: NOTShape()) {
-                            engine.add(NOTGate(label: "NOTGate"))
+                            engine.add(NOTGate())
                         }
                     }
                 }
@@ -92,7 +92,7 @@ struct InspectorView: View {
     return GeometryReader { proxy in
         InspectorView(proxy: proxy)
             .environmentObject(engine)
-            .environmentObject(EditorContext(engine: engine))
+            .environmentObject(EditorContext())
     }
     .ignoresSafeArea(.all, edges: .bottom)
     .toolbarBackground(.visible, for: .navigationBar)

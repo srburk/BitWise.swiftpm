@@ -11,18 +11,18 @@ import SwiftUI
 class ANDGate: BaseReasonComponent {
     
     var id: UUID
-    var label: String
         
     var inputConnections: [ComponentConnector]
     var outputConnections: [ComponentConnector]
     var processingGroup: Int
         
-    required init(label: String) {
+    required init(position: CGPoint = .zero) {
         self.id = UUID()
-        self.label = label
         
         self.inputConnections = [.input, .input]
         self.outputConnections = [.output]
+        
+        self.position = position
         
         self.processingGroup = 0
     }

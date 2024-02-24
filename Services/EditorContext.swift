@@ -21,12 +21,19 @@ final class EditorContext: ObservableObject {
     
     // public variables
     @Published public var canvasScale: CGFloat = 1.0
-    @Published public var showingInspectorView: Bool = true
+    @Published public var showingInspectorView: Bool = false
+
+//    @ObservedObject private var engine: ReasonEngine
     
-    @ObservedObject private var engine: ReasonEngine
+    // MARK: Lesson Info
+    @Published public var showingLessonView: Bool = true
+    @Published public var isShowingLessonSelector: Bool = false
+    @Published public var currentlySelectedLesson: Lesson? = LogicGatesLesson
+    @Published public var currentSlide = 0
     
-    init(engine: ReasonEngine, mode: EditingMode = .none, selectedComponent: BaseReasonComponent? = nil, canvasScale: CGFloat = 1.0) {
-        self.engine = engine
+    init(mode: EditingMode = .none, selectedComponent: BaseReasonComponent? = nil, canvasScale: CGFloat = 1.0) {
+        Log.editor.warning("Created new editor context")
+//        self.engine = engine
         self.mode = mode
         self.selectedComponent = selectedComponent
         self.canvasScale = canvasScale
@@ -48,7 +55,7 @@ extension EditorContext {
         }
     }
     
-    public func tappedWireContact(_ component: BaseReasonComponent, contact: ComponentConnector) {
+    public func tappedWireContact(_ component: BaseReasonComponent, contact: ComponentConnector, engine: ReasonEngine) {
         
         if self.mode == .wiring {
             
