@@ -10,6 +10,8 @@ struct ContentView: View {
         NavigationStack {
             
             GeometryReader { proxy in
+                
+                LessonView(lesson: LessonService.lessons.first!, proxy: proxy)
                     
                 RendererView()
                 
@@ -24,6 +26,11 @@ struct ContentView: View {
             .toolbar {
                 
                 ToolbarItemGroup(placement: .topBarLeading) {
+                    Button {
+                        // exit lesson / free build
+                    } label: {
+                        Image(systemName: "xmark")
+                    }
                     Text("Editor Mode: \(editor.mode.rawValue)")
                 }
                 
@@ -42,15 +49,6 @@ struct ContentView: View {
                         }
                     } label: {
                         Image(systemName: "wrench.and.screwdriver.fill")
-                            .padding(5)
-                            .foregroundStyle(editor.showingInspectorView ? .white : .blue)
-                            .background(RoundedRectangle(cornerRadius: 8, style: /*@START_MENU_TOKEN@*/.continuous/*@END_MENU_TOKEN@*/).foregroundStyle(editor.showingInspectorView ? .blue : .clear))
-                    }
-                    
-                    Button {
-                        // show inspector view
-                    } label: {
-                        Image(systemName: "info.circle")
                             .padding(5)
                             .foregroundStyle(editor.showingInspectorView ? .white : .blue)
                             .background(RoundedRectangle(cornerRadius: 8, style: /*@START_MENU_TOKEN@*/.continuous/*@END_MENU_TOKEN@*/).foregroundStyle(editor.showingInspectorView ? .blue : .clear))
