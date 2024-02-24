@@ -12,8 +12,8 @@ struct ContentView: View {
             GeometryReader { proxy in
                 
                 HStack(spacing: 0) {
-                    if editor.showingLessonView && editor.currentlySelectedLesson != nil {
-                        LessonView(lesson: LessonService.lessons.first!, proxy: proxy)
+                    if editor.showingLessonView && !editor.currentlySelectedLesson.slides.isEmpty {
+                        LessonView(proxy: proxy)
                             .transition(.move(edge: .leading))
                     }
 
@@ -40,7 +40,7 @@ struct ContentView: View {
                     } label: {
                         Image(systemName: "xmark")
                     }
-                    if editor.currentlySelectedLesson != nil {
+                    if !editor.currentlySelectedLesson.slides.isEmpty {
                         Button {
                             withAnimation {
                                 editor.showingLessonView.toggle()
@@ -52,10 +52,8 @@ struct ContentView: View {
                 }
                 
                 ToolbarItemGroup(placement: .secondaryAction) {
-                    if let lesson = editor.currentlySelectedLesson {
-                        Text("\(lesson.lessonName)")
-                            .fontWeight(.semibold)
-                    }
+                    Text("\(editor.currentlySelectedLesson.lessonName)")
+                        .fontWeight(.semibold)
                 }
                 
                 ToolbarItemGroup(placement: .topBarTrailing) {
@@ -67,7 +65,7 @@ struct ContentView: View {
                         Image(systemName: "play.fill")
                     }
                     
-                    if let lesson = editor.currentlySelectedLesson, lesson.freePlaceEnabled {
+                    if editor.currentlySelectedLesson.freePlaceEnabled {
                         Button {
                             withAnimation {
                                 editor.showingInspectorView.toggle()

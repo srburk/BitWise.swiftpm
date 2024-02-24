@@ -59,7 +59,7 @@ var LogicGatesLesson: Lesson {
 #Preview {
     return NavigationStack {
         GeometryReader { proxy in
-            LessonView(lesson: LogicGatesLesson, proxy: proxy)
+            LessonView(proxy: proxy)
                 .environmentObject(ReasonEngine())
         }
         .toolbarBackground(.visible, for: .navigationBar)

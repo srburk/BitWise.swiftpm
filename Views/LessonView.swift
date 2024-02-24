@@ -9,7 +9,6 @@ import SwiftUI
 
 struct LessonView: View {
     
-    var lesson: Lesson
     var proxy: GeometryProxy
     
     @EnvironmentObject var editor: EditorContext
@@ -17,7 +16,7 @@ struct LessonView: View {
         
     private var nextButton: some View {
         Button {
-            if editor.currentSlide < lesson.slides.count - 1 {
+            if editor.currentSlide < editor.currentlySelectedLesson.slides.count - 1 {
                 editor.currentSlide += 1
             }
         } label: {
@@ -73,9 +72,9 @@ struct LessonView: View {
     }
     
     private func reloadComponents() {
-        if let lesson = editor.currentlySelectedLesson {
+        if !editor.currentlySelectedLesson.slides.isEmpty {
             engine.removeAll()
-            lesson.slides[editor.currentSlide].engineLoadingCommand(engine)
+            editor.currentlySelectedLesson.slides[editor.currentSlide].engineLoadingCommand(engine)
         }
     }
     
@@ -85,56 +84,59 @@ struct LessonView: View {
                 
                 Color(.sRGB, red: 0.97, green: 0.97, blue: 0.97)
                 
-                VStack(spacing: 15) {
-                    HStack {
-                        Text(lesson.slides[editor.currentSlide].slideTitle)
-                            .font(.title3)
-                            .fontWeight(.semibold)
-                        Spacer()
-                    }
-                    
-                    if lesson.slides[editor.currentSlide].headlineShape != nil {
-                        HStack(alignment: .center) {
-                            Spacer()
-                            lesson.slides[editor.currentSlide].headlineShape?.path(in: .init(x: 0, y: 0, width: 100, height: 100))
-                                .frame(width: 100, height: 100)
-                                .foregroundStyle(.gray)
+                if !editor.currentlySelectedLesson.slides.isEmpty {
+                    VStack(spacing: 15) {
+                        HStack {
+                            Text(editor.currentlySelectedLesson.slides[editor.currentSlide].slideTitle)
+                                .font(.title3)
+                                .fontWeight(.semibold)
                             Spacer()
                         }
-                        .frame(height: 150)
-                        .background(Color(uiColor: .systemGray5), in: RoundedRectangle(cornerRadius: 10))
-                    }
-                    
-                    HStack {
-                        Text(lesson.slides[editor.currentSlide].lessonPlan)
-                        Spacer()
-                    }
-                    
-                    Spacer()
-                    
-                    if (editor.currentSlide == 0) {
-                        nextButton
-                    } else if editor.currentSlide == lesson.slides.count - 1 {
-                        HStack(spacing: 10) {
-                            backButton
-                            finishButton
+                        
+                        if editor.currentlySelectedLesson.slides[editor.currentSlide].headlineShape != nil {
+                            HStack(alignment: .center) {
+                                Spacer()
+                                editor.currentlySelectedLesson.slides[editor.currentSlide].headlineShape?.path(in: .init(x: 0, y: 0, width: 100, height: 100))
+                                    .frame(width: 100, height: 100)
+                                    .foregroundStyle(.gray)
+                                Spacer()
+                            }
+                            .frame(height: 150)
+                            .background(Color(uiColor: .systemGray5), in: RoundedRectangle(cornerRadius: 10))
                         }
-                    } else {
-                        HStack(spacing: 10) {
-                            backButton
+                        
+                        HStack {
+                            Text(editor.currentlySelectedLesson.slides[editor.currentSlide].lessonPlan)
+                            Spacer()
+                        }
+                        
+                        Spacer()
+                        
+                        if (editor.currentSlide == 0) {
                             nextButton
+                        } else if editor.currentSlide == editor.currentlySelectedLesson.slides.count - 1 {
+                            HStack(spacing: 10) {
+                                backButton
+                                finishButton
+                            }
+                        } else {
+                            HStack(spacing: 10) {
+                                backButton
+                                nextButton
+                            }
                         }
                     }
+                    .padding(.top, 75)
+                    .padding()
+                    
+                    .onChange(of: editor.currentlySelectedLesson) { _ in
+                        reloadComponents()
+                    }
+                    .onChange(of: editor.currentSlide) { _ in
+                        reloadComponents()
+                    }
                 }
-                .padding(.top, 75)
-                .padding()
                 
-                .onChange(of: editor.currentlySelectedLesson) { _ in
-                    reloadComponents()
-                }
-                .onChange(of: editor.currentSlide) { _ in
-                    reloadComponents()
-                }
             }
             .frame(width: proxy.size.width * 0.2)
             .border(Color(uiColor: .systemGray3), width: 0.5)
@@ -146,7 +148,7 @@ struct LessonView: View {
 #Preview {
     return NavigationStack {
         GeometryReader { proxy in
-            LessonView(lesson: LessonService.lessons.first!, proxy: proxy)
+            LessonView(proxy: proxy)
                 .environmentObject(EditorContext())
         }
         .toolbarBackground(.visible, for: .navigationBar)

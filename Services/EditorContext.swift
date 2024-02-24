@@ -28,7 +28,11 @@ final class EditorContext: ObservableObject {
     // MARK: Lesson Info
     @Published public var showingLessonView: Bool = true
     @Published public var isShowingLessonSelector: Bool = false
-    @Published public var currentlySelectedLesson: Lesson?
+    @Published public var currentlySelectedLesson: Lesson = LessonService.lessons.first! {
+        didSet {
+            Log.editor.log("Changed lesson")
+        }
+    }
     @Published public var currentSlide = 0
     
     init(mode: EditingMode = .none, selectedComponent: BaseReasonComponent? = nil, canvasScale: CGFloat = 1.0) {

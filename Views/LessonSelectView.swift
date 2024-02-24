@@ -38,16 +38,20 @@ struct LessonSelectView: View {
                     Button {
                         editor.currentlySelectedLesson = lesson
                         self.dismiss()
-                        Log.general.log("Picked lesson: \(lesson.lessonName)")
                     } label: {
                         HStack {
                             Text("\(lesson.lessonName)")
                                 .font(.title3)
                             Spacer()
-                            Image(systemName: "arrow.right")
+                            if lesson.id == editor.currentlySelectedLesson.id {
+                                Image(systemName: "checkmark.circle.fill")
+                            } else {
+                                Image(systemName: "arrow.right")
+                            }
                         }
                         .padding()
-                        .background(Color(uiColor: .systemGray5), in: RoundedRectangle(cornerRadius: 10))
+                        .foregroundStyle((lesson.id == editor.currentlySelectedLesson.id) ? Color.white : Color.black)
+                        .background((lesson.id == editor.currentlySelectedLesson.id) ? .blue : Color(uiColor: .systemGray5), in: RoundedRectangle(cornerRadius: 10))
                     }
                     .buttonStyle(.plain)
                 }
