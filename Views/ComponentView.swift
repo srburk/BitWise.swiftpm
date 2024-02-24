@@ -15,6 +15,7 @@ struct ComponentView: View {
     @EnvironmentObject var editor: EditorContext
     @EnvironmentObject var engine: ReasonEngine
     
+    var canvas: CGSize
     var component: BaseReasonComponent
     
     @State private var isShowingPopoverView: Bool = false
@@ -32,14 +33,25 @@ struct ComponentView: View {
         } else {
             self.position = component.position
         }
+        self.canvas = canvas
     }
     
     var drag: some Gesture {
         DragGesture()
             .onChanged { value in
                 editor.draggingComponent(component)
-                self.position.x += value.translation.width
-                self.position.y += value.translation.height
+                
+                var newPosition = position
+                newPosition.x += value.translation.width
+                newPosition.y += value.translation.height
+                
+                if newPosition.x >= 0 && newPosition.x < canvas.width {
+                    self.position.x = newPosition.x
+                }
+                
+                if newPosition.y >= 0 && newPosition.y < canvas.height {
+                    self.position.y = newPosition.y
+                }
             }
     }
     

@@ -16,7 +16,7 @@ var LogicGatesLesson: Lesson {
     var slides: [LessonSlide] = [
     
         LessonSlide(slideTitle: "The NOT Gate", lessonPlan: """
-        NOT  gates *invert* their input. For example, when given an output of **on**, the NOT gate outputs **off**
+        NOT gates *invert* their input. For example, when given an output of **on**, the NOT gate outputs **off**
         """, headlineShape: {
             return NOTShape()
         }(), engineLoadingCommand: { engine in

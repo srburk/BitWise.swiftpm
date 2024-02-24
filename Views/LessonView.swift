@@ -115,7 +115,10 @@ struct LessonView: View {
                     if (editor.currentSlide == 0) {
                         nextButton
                     } else if editor.currentSlide == lesson.slides.count - 1 {
-                        finishButton
+                        HStack(spacing: 10) {
+                            backButton
+                            finishButton
+                        }
                     } else {
                         HStack(spacing: 10) {
                             backButton
@@ -126,9 +129,6 @@ struct LessonView: View {
                 .padding(.top, 75)
                 .padding()
                 
-                .onAppear {
-                    reloadComponents()
-                }
                 .onChange(of: editor.currentlySelectedLesson) { _ in
                     reloadComponents()
                 }

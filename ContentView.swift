@@ -11,7 +11,7 @@ struct ContentView: View {
             
             GeometryReader { proxy in
                 
-                HStack {
+                HStack(spacing: 0) {
                     if editor.showingLessonView && editor.currentlySelectedLesson != nil {
                         LessonView(lesson: LessonService.lessons.first!, proxy: proxy)
                             .transition(.move(edge: .leading))
