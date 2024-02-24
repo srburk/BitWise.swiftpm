@@ -11,7 +11,6 @@ import SwiftUI
 class OutputComponent: BaseReasonComponent {
         
     var id: UUID
-    var label: String
     
     var inputConnections: [ComponentConnector] = [.input]
     var outputConnections: [ComponentConnector] = []
@@ -20,9 +19,9 @@ class OutputComponent: BaseReasonComponent {
     
     var processingGroup: Int = 0
         
-    required init(label: String) {
+    required init(position: CGPoint = .zero) {
         self.id = UUID()
-        self.label = label
+        self.position = position
     }
     
     public func compute() {

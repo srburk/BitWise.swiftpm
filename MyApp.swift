@@ -4,11 +4,12 @@ import SwiftUI
 struct MyApp: App {
     
     @ObservedObject var reasonEngine = ReasonEngine()
+    @ObservedObject var editor = EditorContext()
     
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environmentObject(EditorContext(engine: reasonEngine))
+                .environmentObject(editor)
                 .environmentObject(reasonEngine)
             
                 // thread hanger code

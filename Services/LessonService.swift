@@ -11,7 +11,8 @@ import SwiftUI
 struct LessonService {
     
     static let lessons: [Lesson] = [
-        LogicGatesLesson()
+        LogicGatesLesson,
+        LogicGatesLesson
     ]
     
 }

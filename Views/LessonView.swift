@@ -12,7 +12,72 @@ struct LessonView: View {
     var lesson: Lesson
     var proxy: GeometryProxy
     
-    @State var currentLesson = 0
+    @EnvironmentObject var editor: EditorContext
+    @EnvironmentObject var engine: ReasonEngine
+        
+    private var nextButton: some View {
+        Button {
+            if editor.currentSlide < lesson.slides.count - 1 {
+                editor.currentSlide += 1
+            }
+        } label: {
+            HStack {
+                Spacer()
+                Text("Next")
+                Image(systemName: "arrow.right.circle.fill")
+                Spacer()
+            }
+            .font(.headline)
+            .foregroundStyle(.white)
+            .frame(height: 50)
+            .background(RoundedRectangle(cornerRadius: 10).foregroundStyle(.blue))
+        }
+        .buttonStyle(.plain)
+    }
+    
+    private var backButton: some View {
+        Button {
+            if editor.currentSlide > 0 {
+                editor.currentSlide -= 1
+            }
+        } label: {
+            HStack {
+                Spacer()
+                Image(systemName: "arrow.left.circle.fill")
+                Text("Back")
+                Spacer()
+            }
+            .font(.headline)
+            .foregroundStyle(.white)
+            .frame(height: 50)
+            .background(RoundedRectangle(cornerRadius: 10).foregroundStyle(.gray))
+        }
+        .buttonStyle(.plain)
+    }
+    
+    private var finishButton: some View {
+        Button {
+            // finish
+        } label: {
+            HStack {
+                Spacer()
+                Text("Finish")
+                Image(systemName: "checkmark.circle.fill")
+                Spacer()
+            }
+            .font(.headline)
+            .foregroundStyle(.white)
+            .frame(height: 50)
+            .background(RoundedRectangle(cornerRadius: 10).foregroundStyle(.green))
+        }
+    }
+    
+    private func reloadComponents() {
+        if let lesson = editor.currentlySelectedLesson {
+            engine.removeAll()
+            lesson.slides[editor.currentSlide].engineLoadingCommand(engine)
+        }
+    }
     
     var body: some View {
         HStack {
@@ -22,16 +87,16 @@ struct LessonView: View {
                 
                 VStack(spacing: 15) {
                     HStack {
-                        Text(lesson.slides[currentLesson].slideTitle)
+                        Text(lesson.slides[editor.currentSlide].slideTitle)
                             .font(.title3)
                             .fontWeight(.semibold)
                         Spacer()
                     }
                     
-                    if lesson.slides[currentLesson].headlineShape != nil {
+                    if lesson.slides[editor.currentSlide].headlineShape != nil {
                         HStack(alignment: .center) {
                             Spacer()
-                            lesson.slides[currentLesson].headlineShape?.path(in: .init(x: 0, y: 0, width: 100, height: 100))
+                            lesson.slides[editor.currentSlide].headlineShape?.path(in: .init(x: 0, y: 0, width: 100, height: 100))
                                 .frame(width: 100, height: 100)
                                 .foregroundStyle(.gray)
                             Spacer()
@@ -41,36 +106,39 @@ struct LessonView: View {
                     }
                     
                     HStack {
-                        Text(lesson.slides[currentLesson].lessonPlan)
+                        Text(lesson.slides[editor.currentSlide].lessonPlan)
                         Spacer()
                     }
                     
                     Spacer()
                     
-                    Button {
-                        if currentLesson < lesson.slides.count - 1 {
-                            currentLesson += 1
+                    if (editor.currentSlide == 0) {
+                        nextButton
+                    } else if editor.currentSlide == lesson.slides.count - 1 {
+                        finishButton
+                    } else {
+                        HStack(spacing: 10) {
+                            backButton
+                            nextButton
                         }
-                    } label: {
-                        HStack {
-                            Text("Next Slide")
-                            Image(systemName: "arrow.right.circle.fill")
-                        }
-                        .font(.headline)
-                        .foregroundStyle(.white)
-                        .frame(width: proxy.size.width * 0.18, height: 50)
-                        .background(RoundedRectangle(cornerRadius: 10).foregroundStyle(.blue))
                     }
-                    .buttonStyle(.plain)
                 }
                 .padding(.top, 75)
                 .padding()
+                
+                .onAppear {
+                    reloadComponents()
+                }
+                .onChange(of: editor.currentlySelectedLesson) { _ in
+                    reloadComponents()
+                }
+                .onChange(of: editor.currentSlide) { _ in
+                    reloadComponents()
+                }
             }
             .frame(width: proxy.size.width * 0.2)
             .border(Color(uiColor: .systemGray3), width: 0.5)
             .ignoresSafeArea(.all, edges: [.bottom, .top])
-            
-            Spacer()
         }
     }
 }
@@ -79,6 +147,7 @@ struct LessonView: View {
     return NavigationStack {
         GeometryReader { proxy in
             LessonView(lesson: LessonService.lessons.first!, proxy: proxy)
+                .environmentObject(EditorContext())
         }
         .toolbarBackground(.visible, for: .navigationBar)
         .toolbar {

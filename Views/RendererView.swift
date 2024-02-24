@@ -12,21 +12,6 @@ struct RendererView: View {
     
     @EnvironmentObject var engine: ReasonEngine
     @EnvironmentObject var editor: EditorContext
-        
-//    @State private var position: CGPoint = .zero
-
-    // drag operation changes based on editor context
-//    var drag: some Gesture {
-//        DragGesture(coordinateSpace: .global)
-//            .onChanged { value in
-//                if editor.mode == .placement && editor.selectedComponent != nil {
-//                    engine.renderer?.dragComponent(editor.selectedComponent!, to: value)
-//                }
-//                engine.dragObject(to: value)
-//                self.position.x += value.translation.width
-//                self.position.y += value.translation.height
-//            }
-//    }
     
     var body: some View {
         
@@ -37,15 +22,13 @@ struct RendererView: View {
                 
                 ForEach(engine.connections, id: \.id) { connection in
                     Path { path in
-        //                        for connection in engine.connections {
-                            let controlPointX = (connection.head.position.x - connection.tail.position.x) / 4 + connection.tail.position.x // option 1
-                            let controlPointY = (connection.head.position.y - connection.tail.position.y) + connection.tail.position.y
-                            let controlPoint = CGPoint(x: controlPointX, y: controlPointY)
-        //                        path.addEllipse(in: .init(x: controlPointX, y: controlPointY, width: 10, height: 10))
-                            
-                            // heads are inputs (hard-coding this in for now
-                            let inputContact = connection.head.position.applying(.init(translationX: 50 + 20, y: 0))
-                            var outputContact = connection.tail.position
+                        
+                        let controlPointX = (connection.head.position.x - connection.tail.position.x) / 4 + connection.tail.position.x // option 1
+                        let controlPointY = (connection.head.position.y - connection.tail.position.y) + connection.tail.position.y
+                        let controlPoint = CGPoint(x: controlPointX, y: controlPointY)
+                        
+                        let inputContact = connection.head.position.applying(.init(translationX: 50 + 20, y: 0))
+                        var outputContact = connection.tail.position
                             
                         if connection.tail.inputConnections.count > 1 {
                             if let outputNum = connection.tail.inputConnections.firstIndex(where: { $0.connection?.id == connection.id }) {
@@ -54,13 +37,8 @@ struct RendererView: View {
                         } else {
                             outputContact = outputContact.applying(.init(translationX: -70, y: 0))
                         }
-                            // we have to figure out which input this is (only up to 2 for right now
-//                        if let outputNum = connection.tail.inputConnections.firstIndex(where: { $0.connection?.id == connection.id }) {
-//                                outputContact = outputContact.applying(.init(translationX: -50 - 20, y: CGFloat((outputNum * 50) - 25)))
-//                            }
-                            path.move(to: inputContact)
-                            path.addQuadCurve(to: outputContact, control: controlPoint)
-        //                        }
+                        path.move(to: inputContact)
+                        path.addQuadCurve(to: outputContact, control: controlPoint)
                     }
                     .stroke((connection.value) ? .green : .gray, style: .init(lineWidth: 5, lineCap: .round, lineJoin: .round, miterLimit: 0.0, dash: [], dashPhase: 0))
                 }
@@ -78,8 +56,8 @@ struct RendererView: View {
     
     let engine = ReasonEngine()
     
-    let ORGate = ORGate(label: "ORGate")
-    let Input = InputComponent(label: "Input")
+    let ORGate = ORGate()
+    let Input = InputComponent()
     
     ORGate.moveTo(.init(x: 800, y: 300))
     Input.moveTo(.init(x: 200, y: 500))
@@ -88,6 +66,6 @@ struct RendererView: View {
     engine.add([ORGate, Input])
     
     return RendererView()
-        .environmentObject(EditorContext(engine: engine))
+        .environmentObject(EditorContext())
         .environmentObject(engine)
 }

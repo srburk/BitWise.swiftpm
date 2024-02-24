@@ -8,15 +8,28 @@
 import Foundation
 import SwiftUI
 
-protocol Lesson {
-    var id: UUID { get }
-    var lessonName: String { get }
-    var slides: [LessonSlide] { get }
+class Lesson: Equatable {
+    static func == (lhs: Lesson, rhs: Lesson) -> Bool {
+        return lhs.id == rhs.id
+    }
+    
+    var id: UUID = UUID()
+    var lessonName: String
+    var slides: [LessonSlide]
+    var freePlaceEnabled: Bool
+    
+    init(lessonName: String, slides: [LessonSlide], freePlaceEnabled: Bool) {
+        self.lessonName = lessonName
+        self.slides = slides
+        self.freePlaceEnabled = freePlaceEnabled
+    }
 }
 
 struct LessonSlide {
     var slideTitle: String
     var lessonPlan: LocalizedStringKey
     var headlineShape: (any Shape)?
+    
+    var engineLoadingCommand: (ReasonEngine) -> Void
 //    var slideCompleteCondition: () -> Bool
 }

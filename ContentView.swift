@@ -4,16 +4,21 @@ struct ContentView: View {
     
     @EnvironmentObject var engine: ReasonEngine
     @EnvironmentObject var editor: EditorContext
-    
+        
     var body: some View {
         
         NavigationStack {
             
             GeometryReader { proxy in
                 
-                LessonView(lesson: LessonService.lessons.first!, proxy: proxy)
-                    
-                RendererView()
+                HStack {
+                    if editor.showingLessonView && editor.currentlySelectedLesson != nil {
+                        LessonView(lesson: LessonService.lessons.first!, proxy: proxy)
+                            .transition(.move(edge: .leading))
+                    }
+
+                    RendererView()
+                }
                 
                 if editor.showingInspectorView {
                     InspectorView(proxy: proxy)
@@ -23,15 +28,34 @@ struct ContentView: View {
             }
             .ignoresSafeArea(.all, edges: .bottom)
             
+            .sheet(isPresented: $editor.isShowingLessonSelector, content: {
+                LessonSelectView()
+            })
+            
             .toolbar {
                 
                 ToolbarItemGroup(placement: .topBarLeading) {
                     Button {
-                        // exit lesson / free build
+                        editor.isShowingLessonSelector = true
                     } label: {
                         Image(systemName: "xmark")
                     }
-                    Text("Editor Mode: \(editor.mode.rawValue)")
+                    if editor.currentlySelectedLesson != nil {
+                        Button {
+                            withAnimation {
+                                editor.showingLessonView.toggle()
+                            }
+                        } label: {
+                            Image(systemName: "book.pages")
+                        }
+                    }
+                }
+                
+                ToolbarItemGroup(placement: .secondaryAction) {
+                    if let lesson = editor.currentlySelectedLesson {
+                        Text("\(lesson.lessonName)")
+                            .fontWeight(.semibold)
+                    }
                 }
                 
                 ToolbarItemGroup(placement: .topBarTrailing) {
@@ -43,15 +67,17 @@ struct ContentView: View {
                         Image(systemName: "play.fill")
                     }
                     
-                    Button {
-                        withAnimation {
-                            editor.showingInspectorView.toggle()
+                    if let lesson = editor.currentlySelectedLesson, lesson.freePlaceEnabled {
+                        Button {
+                            withAnimation {
+                                editor.showingInspectorView.toggle()
+                            }
+                        } label: {
+                            Image(systemName: "wrench.and.screwdriver.fill")
+                                .padding(5)
+                                .foregroundStyle(editor.showingInspectorView ? .white : .blue)
+                                .background(RoundedRectangle(cornerRadius: 8, style: /*@START_MENU_TOKEN@*/.continuous/*@END_MENU_TOKEN@*/).foregroundStyle(editor.showingInspectorView ? .blue : .clear))
                         }
-                    } label: {
-                        Image(systemName: "wrench.and.screwdriver.fill")
-                            .padding(5)
-                            .foregroundStyle(editor.showingInspectorView ? .white : .blue)
-                            .background(RoundedRectangle(cornerRadius: 8, style: /*@START_MENU_TOKEN@*/.continuous/*@END_MENU_TOKEN@*/).foregroundStyle(editor.showingInspectorView ? .blue : .clear))
                     }
                 }
             }
@@ -76,4 +102,5 @@ struct ContentView: View {
 #Preview {
     ContentView()
         .environmentObject(ReasonEngine())
+        .environmentObject(EditorContext())
 }

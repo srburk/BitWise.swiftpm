@@ -72,7 +72,7 @@ struct ComponentView: View {
                     .frame(width: 20 * editor.canvasScale, height: 20 * editor.canvasScale)
                     .foregroundStyle(color)
                     .onTapGesture {
-                        editor.tappedWireContact(component, contact: connector)
+                        editor.tappedWireContact(component, contact: connector, engine: engine)
                     }
                     .onLongPressGesture {
                         if connector.connection != nil {
@@ -158,8 +158,8 @@ struct ComponentView: View {
 
 #Preview {
     GeometryReader { context in
-        ComponentView(component: ORGate(label: "ORGatePreview"), in: context.size)
+        ComponentView(component: ORGate(), in: context.size)
 //        ComponentView(component: ORGate(label: "ORGatePreview"), position: .init(x: context.size.width / 2, y: context.size.height / 2))
-            .environmentObject(EditorContext(engine: ReasonEngine(), canvasScale: 3.0))
+//            .environmentObject(EditorContext(engine: ReasonEngine(), canvasScale: 3.0))
     }
 }

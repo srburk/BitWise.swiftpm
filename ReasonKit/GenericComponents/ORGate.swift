@@ -11,16 +11,14 @@ import SwiftUI
 class ORGate: BaseReasonComponent {
     
     var id: UUID
-    
-    var label: String
-    
+        
     var inputConnections: [ComponentConnector] = [.input, .input]
     var outputConnections: [ComponentConnector] = [.init(type: .output)]
     var processingGroup: Int
         
-    required init(label: String) {
+    required init(position: CGPoint = .zero) {
         self.id = UUID()
-        self.label = label
+        self.position = position
         self.processingGroup = 0
     }
     

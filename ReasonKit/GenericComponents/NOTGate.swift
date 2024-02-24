@@ -11,18 +11,18 @@ import SwiftUI
 class NOTGate: BaseReasonComponent {
     
     var id: UUID
-    var label: String
         
     var inputConnections: [ComponentConnector]
     var outputConnections: [ComponentConnector]
     var processingGroup: Int
         
-    required init(label: String) {
+    required init(position: CGPoint = .zero) {
         self.id = UUID()
-        self.label = label
         
         self.inputConnections = [.input]
         self.outputConnections = [.output]
+        
+        self.position = position
         
         self.processingGroup = 0
     }
@@ -43,7 +43,7 @@ class NOTGate: BaseReasonComponent {
     var shape: any Shape {
         NOTShape()
     }
-    var position: CGPoint = .zero
+    var position: CGPoint
 }
 
 extension NOTGate {
