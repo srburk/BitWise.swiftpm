@@ -17,7 +17,13 @@ struct ContentView: View {
                             .transition(.move(edge: .leading))
                     }
 
-                    RendererView()
+                    ZStack {
+                        RendererView()
+                            .zIndex(1.0)
+                        
+                        PencilView()
+                            .zIndex((editor.mode == .drawing) ? 2.0 : 0.0)
+                    }
                 }
                 
                 if editor.showingInspectorView {
@@ -40,6 +46,7 @@ struct ContentView: View {
                     } label: {
                         Image(systemName: "xmark")
                     }
+                    
                     if !editor.currentlySelectedLesson.slides.isEmpty {
                         Button {
                             withAnimation {
@@ -75,6 +82,15 @@ struct ContentView: View {
                         }
                     } label: {
                         Image(systemName: "play.fill")
+                    }
+                    
+                    Button {
+                        editor.toggleDrawingMode()
+                    } label: {
+                        Image(systemName: "pencil.and.outline")
+                            .padding(5)
+                            .foregroundStyle((editor.mode == .drawing) ? .white : .blue)
+                            .background(RoundedRectangle(cornerRadius: 8, style: /*@START_MENU_TOKEN@*/.continuous/*@END_MENU_TOKEN@*/).foregroundStyle((editor.mode == .drawing) ? Color.blue : Color.clear))
                     }
                     
                     if editor.currentlySelectedLesson.freePlaceEnabled {

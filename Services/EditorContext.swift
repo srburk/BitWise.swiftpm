@@ -15,15 +15,13 @@ enum EditingMode: String {
 // state machine for editing context
 final class EditorContext: ObservableObject {
         
-    @Published private(set) var mode: EditingMode = .none
+    @Published private(set) var mode: EditingMode
     @Published private(set) var selectedComponent: BaseReasonComponent?
     @Published private(set) var lastTappedWireContact: ComponentConnector?
     
     // public variables
     @Published public var canvasScale: CGFloat = 1.0
     @Published public var showingInspectorView: Bool = false
-
-//    @ObservedObject private var engine: ReasonEngine
     
     // MARK: Lesson Info
     @Published public var showingLessonView: Bool = true
@@ -31,6 +29,8 @@ final class EditorContext: ObservableObject {
     @Published public var currentlySelectedLesson: Lesson = LessonService.lessons.first! {
         didSet {
             self.showingInspectorView = false
+            PencilService.shared.hideToolPicker()
+            self.mode = .none
         }
     }
     @Published public var currentSlide = 0
@@ -56,6 +56,16 @@ extension EditorContext {
             }
         } else {
             return false
+        }
+    }
+    
+    public func toggleDrawingMode() {
+        if self.mode == .drawing {
+            self.mode = .none
+            PencilService.shared.hideToolPicker()
+        } else {
+            self.mode = .drawing
+            PencilService.shared.showToolPicker()
         }
     }
     
