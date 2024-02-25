@@ -79,17 +79,6 @@ struct ContentView: View {
                     }
                 }
             }
-            
-//            .toolbar(id: "customizable") {
-//                
-//                ToolbarItem(id: "test", placement: .secondaryAction) {
-//                    Text("Test")
-//                }
-                
-//                ToolbarItem(id: "intiallyHidden", placement: .secondaryAction, showsByDefault: false) {
-//                    Text("Hidden Initially")
-//                }
-//            }
             .toolbarRole(.editor)
             .toolbarBackground(.visible, for: .navigationBar)
 

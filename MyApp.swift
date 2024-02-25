@@ -2,7 +2,7 @@ import SwiftUI
 
 @main
 struct MyApp: App {
-    
+        
     @ObservedObject var reasonEngine = ReasonEngine()
     @ObservedObject var editor = EditorContext()
     
@@ -11,6 +11,8 @@ struct MyApp: App {
             ContentView()
                 .environmentObject(editor)
                 .environmentObject(reasonEngine)
+            
+                .environment(\.colorScheme, .light)
             
                 // thread hanger code
                 .task {
