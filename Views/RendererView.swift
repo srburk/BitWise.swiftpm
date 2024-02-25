@@ -65,7 +65,7 @@ struct RendererView: View {
     
     engine.connectComponent(ORGate, component2: Input, connector1: ORGate.inputConnections.first!, connector2: Input.outputConnections.first!)
     engine.connectComponent(ORGate, component2: Output, connector1: ORGate.outputConnections.first!, connector2: Output.inputConnections.first!)
-    
+        
     engine.add([ORGate, Input, Output])
     
     return RendererView()

@@ -10,8 +10,7 @@ import Foundation
 
 var FreePlayLesson: Lesson {
 
-    let lessonName = "Free Play"
-    let freePlaceEnable = true
+    let lessonName = "Free Place"
     
     return Lesson(lessonName: lessonName, slides: [], freePlaceEnabled: true)
 }

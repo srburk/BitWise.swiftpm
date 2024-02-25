@@ -73,7 +73,9 @@ extension EditorContext {
 //                    engine.connectComponent(sourceComponent, to: component)
 //                }
                 
-                engine.connectComponent(component, component2: sourceComponent, connector1: contact, connector2: sourceContact)
+                Task {
+                    await engine.connectComponent(component, component2: sourceComponent, connector1: contact, connector2: sourceContact)
+                }
                 
             }
             self.mode = .none

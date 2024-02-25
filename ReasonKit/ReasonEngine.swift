@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 
 // engine for processing nodes
+@MainActor
 final class ReasonEngine: ObservableObject {
                 
     // nodes stored with graph relationship
@@ -79,11 +80,17 @@ extension ReasonEngine {
 //    }
     
     // go through queue and compute
-    public func compute() {
-        for group in queue.keys.sorted() {
-            print("Group \(group):")
-            for node in queue[group] ?? [] {
-                node.compute()
+    public func compute() async {
+           
+        self.orderNodes()
+        
+        await withTaskGroup(of: Void.self) { group in
+            for sortedGroup in queue.keys.sorted() {
+                group.addTask {
+                    for node in await self.queue[sortedGroup] ?? [] {
+                        node.compute()
+                    }
+                }
             }
         }
     }
@@ -99,7 +106,7 @@ extension ReasonEngine {
     }
     
     /// gives each node the correct processingGroup label
-    public func orderNodes() {
+    private func orderNodes() {
         
         var visited = Set<UUID>()
         // TODO: Only reset relevant groups
@@ -140,6 +147,7 @@ extension ReasonEngine {
                 queue[node.processingGroup] = [node]
             }
         }
+        
     }
     
     public func add(_ component: BaseReasonComponent) {
@@ -160,42 +168,71 @@ extension ReasonEngine {
 //    public func removeConnection(_ connection: ReasonConnection) {
 //        if let connectionIndex = self.connections.firstIndex(where: { $0.id == connection.id }) {
 //            self.connections.remove(at: connectionIndex)
-//            let inputConnector = connection.head.inputConnections.first { connector in
-//                connector.connection.contains(where: { $0.id == connection.id })
-//            }
-//            let input = inputConnector?.connection.first(where: { $0.id == connection.id })
 //            
-//            let output =  connection.head.outputConnections.first(where: { $0.connection?.id == connection.id })
-//            output?.connection = nil
+//            for input in connection.head.inputConnections {
+//                input.connection.removeAll(where: { $0.id == connection.id })
+//            }
+//            
+//            for output in connection.tail.outputConnections {
+//                output.connection.removeAll(where: { $0.id == connection.id })
+//            }
+//
 //        } else {
 //            Log.reason.error("Connection \(connection.id) does not exist")
 //        }
 //    }
     
-//    public func remove(_ component: BaseReasonComponent) {
-//        
-//        for inputConnection in component.inputConnections {
-//            self.removeConnection(inputConnection)
-//        }
-//        
-//        for outputConnection in component.outputConnections {
-//            self.removeConnection(outputConnection)
-//        }
-//        
-//        Log.reason.log("removed node: \(component.label)")
-//        if let index = nodes.firstIndex(where: { $0.id == component.id }) {
-//            self.nodes.remove(at: index)
-//            Log.reason.log("Removed component \(String(describing: component))")
-//        } else {
-//            Log.reason.warning("Can't remove component that doesn't exist: \(component.label)")
+//    public func removeConnections(_ connections: [ReasonConnection]) {
+//        for connection in connections {
+//            self.remove(connection)
 //        }
 //    }
     
-//    public func remove(_ components: [BaseReasonComponent]) {
-//        for component in components {
-//            self.remove(component)
-//        }
-//    }
+    public func remove(_ contacts: [ComponentConnector]) {
+        for connector in contacts {
+            self.remove(connector)
+        }
+    }
+    
+    public func remove(_ contact: ComponentConnector) {
+        for connection in contact.connection {
+            if let connectionIndex = self.connections.firstIndex(where: { $0.id == connection.id }) {
+                self.connections.remove(at: connectionIndex)
+                
+                for input in connection.head.inputConnections {
+                    input.connection.removeAll(where: { $0.id == connection.id })
+                }
+    
+                for output in connection.tail.outputConnections {
+                    output.connection.removeAll(where: { $0.id == connection.id })
+                }
+            }
+        }
+    }
+    
+    public func remove(_ component: BaseReasonComponent) {
+        
+        for inputConnection in component.inputConnections {
+            self.remove(inputConnection)
+        }
+        
+        for outputConnection in component.outputConnections {
+            self.remove(outputConnection)
+        }
+        
+        if let index = nodes.firstIndex(where: { $0.id == component.id }) {
+            self.nodes.remove(at: index)
+            Log.reason.log("Removed component \(String(describing: component))")
+        } else {
+            Log.reason.warning("Can't remove component that doesn't exist: \(String(describing: component))")
+        }
+    }
+    
+    public func remove(_ components: [BaseReasonComponent]) {
+        for component in components {
+            self.remove(component)
+        }
+    }
     
     // for testing purposes, be very careful
     public func removeAll() {
@@ -204,42 +241,3 @@ extension ReasonEngine {
     }
     
 }
-
-// MARK: Renderer functions
-//extension ReasonEngine {
-//    public func componentAtPoint(_ point: CGPoint) -> BaseReasonComponent? {
-//
-//        let localizedPoint = point.applying(.init(scaleX: 1/self.canvasScale, y: 1/self.canvasScale))
-//        if let tappedObject = self.nodes.first(where: { object in
-//            let horizontal = (localizedPoint.x >= object.location.x) && (localizedPoint.x <= object.location.x + object.size.width)
-//            let vertical = (localizedPoint.y >= object.location.y) && (localizedPoint.y <= object.location.y + object.size.height)
-//            return horizontal && vertical
-//        }) {
-//            return tappedObject
-//        } else {
-//            return nil
-//        }
-//    }
-    
-//    public func mappedComponent(_ component: BaseReasonComponent, with context: GraphicsContext) -> Path {
-//
-//        let transform = CGAffineTransform(translationX: component.location.x, y: component.location.y)
-//        let scaler = CGAffineTransform(scaleX: self.canvasScale, y: self.canvasScale)
-//
-//        return (component.shape.path(in: CGRect(x: 0, y: 0, width: component.size.width, height: component.size.height)).applying(transform).applying(scaler))
-//    }
-    
-//    public func update(date: Date) { }
-//
-//    public func dragObject(to value: DragGesture.Value) {
-//
-//        for object in self.nodes {
-//            object.location = object.location.applying(.init(translationX: value.translation.width, y: value.translation.height))
-//        }
-//    }
-//
-//    public func dragComponent(_ component: BaseReasonComponent, to value: DragGesture.Value) {
-//        component.location.x += value.translation.width / self.canvasScale
-//        component.location.y += value.translation.height / self.canvasScale
-//    }
-//}

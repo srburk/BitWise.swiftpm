@@ -24,12 +24,13 @@ var LogicGatesLesson: Lesson {
             let input = InputComponent(position: .init(x: 200, y: 300))
             let output = OutputComponent(position: .init(x: 800, y: 300))
             
-            engine.connectComponent(input, component2: notGate, connector1: input.outputConnections.first!, connector2: notGate.inputConnections.first!)
-            
-            engine.connectComponent(output, component2: notGate, connector1: output.inputConnections.first!, connector2: notGate.outputConnections.first!)
-            
-            engine.add([notGate, input, output])
-            
+            Task {
+                await engine.connectComponent(input, component2: notGate, connector1: input.outputConnections.first!, connector2: notGate.inputConnections.first!)
+                
+                await engine.connectComponent(output, component2: notGate, connector1: output.inputConnections.first!, connector2: notGate.outputConnections.first!)
+                
+                await engine.add([notGate, input, output])
+            }
         }),
         
         LessonSlide(slideTitle: "The OR Gate", lessonPlan: """
@@ -42,13 +43,16 @@ var LogicGatesLesson: Lesson {
             let input2 = InputComponent(position: .init(x: 200, y: 450))
             let output = OutputComponent(position: .init(x: 800, y: 300))
             
-            engine.connectComponent(input1, component2: orGate, connector1: input1.outputConnections.first!, connector2: orGate.inputConnections[0])
+            Task {
+                await engine.connectComponent(input1, component2: orGate, connector1: input1.outputConnections.first!, connector2: orGate.inputConnections[0])
+                
+                await engine.connectComponent(input2, component2: orGate, connector1: input2.outputConnections.first!, connector2: orGate.inputConnections[1])
+                
+                await engine.connectComponent(output, component2: orGate, connector1: output.inputConnections.first!, connector2: orGate.outputConnections.first!)
+                
+                await engine.add([orGate, input1, input2, output])
+            }
             
-            engine.connectComponent(input2, component2: orGate, connector1: input2.outputConnections.first!, connector2: orGate.inputConnections[1])
-            
-            engine.connectComponent(output, component2: orGate, connector1: output.inputConnections.first!, connector2: orGate.outputConnections.first!)
-            
-            engine.add([orGate, input1, input2, output])
         })
     
     ]

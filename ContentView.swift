@@ -58,9 +58,21 @@ struct ContentView: View {
                 
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     
+                    Button(role: .destructive) {
+                        if let selectedComponent = editor.selectedComponent {
+                            engine.remove(selectedComponent)
+                        } else if let selectedContact = editor.lastTappedWireContact {
+                            engine.remove(selectedContact)
+                        }
+                    } label: {
+                        Image(systemName: "trash")
+                    }
+                    .disabled(editor.selectedComponent == nil && editor.lastTappedWireContact == nil)
+                    
                     Button {
-                        engine.orderNodes()
-                        engine.compute()
+                        Task {
+                            await engine.compute()
+                        }
                     } label: {
                         Image(systemName: "play.fill")
                     }

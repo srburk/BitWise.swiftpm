@@ -17,9 +17,7 @@ struct ComponentView: View {
     
     var canvas: CGSize
     var component: BaseReasonComponent
-    
-    @State private var isShowingPopoverView: Bool = false
-    
+        
     @State var position: CGPoint {
         didSet {
             component.position = position
@@ -59,9 +57,7 @@ struct ComponentView: View {
         
         @EnvironmentObject var editor: EditorContext
         @EnvironmentObject var engine: ReasonEngine
-        
-        @State var isShowingPopup: Bool = false
-        
+                
         var connector: ComponentConnector
         var component: BaseReasonComponent
         
@@ -85,21 +81,6 @@ struct ComponentView: View {
                     .foregroundStyle(color)
                     .onTapGesture {
                         editor.tappedWireContact(component, contact: connector, engine: engine)
-                    }
-                    .onLongPressGesture {
-                        if !connector.connection.isEmpty {
-                            self.isShowingPopup = true
-                        }
-                    }
-                    .popover(isPresented: $isShowingPopup, attachmentAnchor: .point(.center), arrowEdge: .bottom) {
-                        Button(role: .destructive) {
-//                            if let connection = connector.connection {
-//                                engine.removeConnection(connection)
-//                            }
-                        } label: {
-                            Label("Remove Connection", systemImage: "trash")
-                                .padding([.leading, .trailing], 15)
-                        }
                     }
             }
         }
