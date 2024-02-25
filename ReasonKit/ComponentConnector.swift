@@ -17,17 +17,17 @@ final class ComponentConnector {
     static var output: ComponentConnector { return ComponentConnector(type: .output) }
 
     let id: UUID
-    var connection: ReasonConnection?
+    var connection: [ReasonConnection] // inputs can have only 1, outputs can have more
     let type: ConnectorType
     
-    init(connection: ReasonConnection? = nil, type: ConnectorType) {
+    init(connection: [ReasonConnection] = [], type: ConnectorType) {
         self.id = UUID()
         self.connection = connection
         self.type = type
     }
     
     var value: Bool {
-        if let wire = self.connection {
+        if let wire = self.connection.first {
             return wire.value
         } else {
             return false
@@ -36,7 +36,9 @@ final class ComponentConnector {
     
     func setValue(_ value: Bool) {
         // can be mulitple in future
-        self.connection?.value = value
+        self.connection.forEach { connection in
+            connection.value = value
+        }
     }
     
 }

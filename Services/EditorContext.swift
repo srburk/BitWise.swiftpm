@@ -30,7 +30,7 @@ final class EditorContext: ObservableObject {
     @Published public var isShowingLessonSelector: Bool = false
     @Published public var currentlySelectedLesson: Lesson = LessonService.lessons.first! {
         didSet {
-            Log.editor.log("Changed lesson")
+            self.showingInspectorView = false
         }
     }
     @Published public var currentSlide = 0
@@ -50,9 +50,9 @@ extension EditorContext {
         
         if let lastContact = lastTappedWireContact {
             if lastContact.type == .input {
-                return contact.type == .output && contact.connection == nil
+                return contact.type == .output
             } else {
-                return contact.type == .input && contact.connection == nil
+                return contact.type == .input && contact.connection.isEmpty
             }
         } else {
             return false

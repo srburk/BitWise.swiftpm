@@ -87,15 +87,15 @@ struct ComponentView: View {
                         editor.tappedWireContact(component, contact: connector, engine: engine)
                     }
                     .onLongPressGesture {
-                        if connector.connection != nil {
+                        if !connector.connection.isEmpty {
                             self.isShowingPopup = true
                         }
                     }
                     .popover(isPresented: $isShowingPopup, attachmentAnchor: .point(.center), arrowEdge: .bottom) {
                         Button(role: .destructive) {
-                            if let connection = connector.connection {
-                                engine.removeConnection(connection)
-                            }
+//                            if let connection = connector.connection {
+//                                engine.removeConnection(connection)
+//                            }
                         } label: {
                             Label("Remove Connection", systemImage: "trash")
                                 .padding([.leading, .trailing], 15)
@@ -158,9 +158,6 @@ struct ComponentView: View {
                 .frame(height: 55 * editor.canvasScale)
             }
             
-//            Text("Group: \(component.processingGroup)")
-//                .font(.caption)
-            
         }
 
         .gesture(drag)
@@ -171,6 +168,8 @@ struct ComponentView: View {
 #Preview {
     GeometryReader { context in
         ComponentView(component: ORGate(), in: context.size)
+            .environmentObject(ReasonEngine())
+            .environmentObject(EditorContext())
 //        ComponentView(component: ORGate(label: "ORGatePreview"), position: .init(x: context.size.width / 2, y: context.size.height / 2))
 //            .environmentObject(EditorContext(engine: ReasonEngine(), canvasScale: 3.0))
     }

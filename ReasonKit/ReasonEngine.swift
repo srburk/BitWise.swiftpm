@@ -33,10 +33,13 @@ extension ReasonEngine {
             let inputComponent = (connector1.type == .input) ? component2 : component1
             let outputComponent = (connector1.type == .input) ? component1 : component2
             
+            let inputConnector = (connector1.type == .input) ? connector2 : connector1
+            let outputConnector = (connector1.type == .input) ? connector1 : connector2
+            
             let newConnection = ReasonConnection(head: inputComponent, tail: outputComponent)
             
-            connector1.connection = newConnection
-            connector2.connection = newConnection
+            inputConnector.connection.append(newConnection)
+            outputConnector.connection = [newConnection]
             
             self.connections.append(newConnection)
             Log.reason.log("Connection Formed from \(inputComponent.description) to \(outputComponent.description)")
@@ -113,7 +116,9 @@ extension ReasonEngine {
                 node.processingGroup = level
                 
                 for child in node.outputConnections.compactMap({ $0.connection }) {
-                    traverseNode(child.tail, level: level + 1)
+                    for connection in child {
+                        traverseNode(connection.tail, level: level + 1)
+                    }
                 }
             }
             return
@@ -152,17 +157,20 @@ extension ReasonEngine {
         }
     }
     
-    public func removeConnection(_ connection: ReasonConnection) {
-        if let connectionIndex = self.connections.firstIndex(where: { $0.id == connection.id }) {
-            self.connections.remove(at: connectionIndex)
-            let input = connection.tail.inputConnections.first(where: { $0.connection?.id == connection.id })
-            input?.connection = nil
-            let output = connection.head.outputConnections.first(where: { $0.connection?.id == connection.id })
-            output?.connection = nil
-        } else {
-            Log.reason.error("Connection \(connection.id) does not exist")
-        }
-    }
+//    public func removeConnection(_ connection: ReasonConnection) {
+//        if let connectionIndex = self.connections.firstIndex(where: { $0.id == connection.id }) {
+//            self.connections.remove(at: connectionIndex)
+//            let inputConnector = connection.head.inputConnections.first { connector in
+//                connector.connection.contains(where: { $0.id == connection.id })
+//            }
+//            let input = inputConnector?.connection.first(where: { $0.id == connection.id })
+//            
+//            let output =  connection.head.outputConnections.first(where: { $0.connection?.id == connection.id })
+//            output?.connection = nil
+//        } else {
+//            Log.reason.error("Connection \(connection.id) does not exist")
+//        }
+//    }
     
 //    public func remove(_ component: BaseReasonComponent) {
 //        

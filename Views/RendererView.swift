@@ -23,19 +23,19 @@ struct RendererView: View {
                 ForEach(engine.connections, id: \.id) { connection in
                     Path { path in
                         
-                        let controlPointX = (connection.head.position.x - connection.tail.position.x) / 4 + connection.tail.position.x // option 1
-                        let controlPointY = (connection.head.position.y - connection.tail.position.y) + connection.tail.position.y
+                        let controlPointX = (connection.tail.position.x -  connection.head.position.x) / 4 + connection.head.position.x // option 1
+                        let controlPointY = (connection.tail.position.y - connection.head.position.y) + connection.head.position.y
                         let controlPoint = CGPoint(x: controlPointX, y: controlPointY)
                         
-                        let inputContact = connection.head.position.applying(.init(translationX: 50 + 20, y: 0))
+                        let inputContact = connection.head.position.applying(.init(translationX: 60, y: 0))
                         var outputContact = connection.tail.position
                             
                         if connection.tail.inputConnections.count > 1 {
-                            if let outputNum = connection.tail.inputConnections.firstIndex(where: { $0.connection?.id == connection.id }) {
-                                outputContact = outputContact.applying(.init(translationX: -50 - 20, y: CGFloat((outputNum * 50) - 25)))
+                            if let outputNum = connection.tail.inputConnections.firstIndex(where: { $0.connection.contains(where: { $0.id == connection.id }) }) {
+                                outputContact = outputContact.applying(.init(translationX: -70, y: CGFloat((outputNum * 50) - 25)))
                             }
                         } else {
-                            outputContact = outputContact.applying(.init(translationX: -70, y: 0))
+                            outputContact = outputContact.applying(.init(translationX: -60, y: 0))
                         }
                         path.move(to: inputContact)
                         path.addQuadCurve(to: outputContact, control: controlPoint)
@@ -58,12 +58,15 @@ struct RendererView: View {
     
     let ORGate = ORGate()
     let Input = InputComponent()
+    let Output = OutputComponent(position: .init(x: 1050, y: 500))
     
-    ORGate.moveTo(.init(x: 800, y: 300))
-    Input.moveTo(.init(x: 200, y: 500))
+    ORGate.moveTo(.init(x: 800, y: 450))
+    Input.moveTo(.init(x: 600, y: 500))
     
     engine.connectComponent(ORGate, component2: Input, connector1: ORGate.inputConnections.first!, connector2: Input.outputConnections.first!)
-    engine.add([ORGate, Input])
+    engine.connectComponent(ORGate, component2: Output, connector1: ORGate.outputConnections.first!, connector2: Output.inputConnections.first!)
+    
+    engine.add([ORGate, Input, Output])
     
     return RendererView()
         .environmentObject(EditorContext())
