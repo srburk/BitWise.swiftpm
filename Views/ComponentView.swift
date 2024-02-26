@@ -27,7 +27,9 @@ struct ComponentView: View {
     init(component: BaseReasonComponent, in canvas: CGSize) {
         self.component = component
         if component.position == .zero {
-            self.position = CGPoint(x: canvas.width / 2, y: canvas.height / 2)
+            let newPosition = CGPoint(x: canvas.width / 2, y: canvas.height / 2)
+            self.position = newPosition
+            component.position = newPosition
         } else {
             self.position = component.position
         }
