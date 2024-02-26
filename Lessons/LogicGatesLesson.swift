@@ -34,7 +34,7 @@ var LogicGatesLesson: Lesson {
         }),
         
         LessonSlide(slideTitle: "The OR Gate", lessonPlan: """
-        OR gates blah blah blah asdlfkjsadfajsdflkj
+        OR gates output true if one or both of their inputs are true.
         """, headlineShape: {
             return ORShape()
         }(), engineLoadingCommand: { engine in
@@ -51,6 +51,28 @@ var LogicGatesLesson: Lesson {
                 await engine.connectComponent(output, component2: orGate, connector1: output.inputConnections.first!, connector2: orGate.outputConnections.first!)
                 
                 await engine.add([orGate, input1, input2, output])
+            }
+            
+        }),
+        
+        LessonSlide(slideTitle: "The AND Gate", lessonPlan: """
+        AND gates output true *only if both* of their inputs are true.
+        """, headlineShape: {
+            return ANDShape()
+        }(), engineLoadingCommand: { engine in
+            let andGate = ANDGate(position: .init(x: 500, y: 300))
+            let input1 = InputComponent(position: .init(x: 200, y: 150))
+            let input2 = InputComponent(position: .init(x: 200, y: 450))
+            let output = OutputComponent(position: .init(x: 800, y: 300))
+            
+            Task {
+                await engine.connectComponent(input1, component2: andGate, connector1: input1.outputConnections.first!, connector2: andGate.inputConnections[0])
+                
+                await engine.connectComponent(input2, component2: andGate, connector1: input2.outputConnections.first!, connector2: andGate.inputConnections[1])
+                
+                await engine.connectComponent(output, component2: andGate, connector1: output.inputConnections.first!, connector2: andGate.outputConnections.first!)
+                
+                await engine.add([andGate, input1, input2, output])
             }
             
         })

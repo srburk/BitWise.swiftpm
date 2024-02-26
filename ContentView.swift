@@ -44,7 +44,7 @@ struct ContentView: View {
                     Button {
                         editor.isShowingLessonSelector = true
                     } label: {
-                        Image(systemName: "xmark")
+                        Image(systemName: "arrow.down.forward.and.arrow.up.backward")
                     }
                     
                     if !editor.currentlySelectedLesson.slides.isEmpty {

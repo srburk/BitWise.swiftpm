@@ -36,8 +36,6 @@ final class EditorContext: ObservableObject {
     @Published public var currentSlide = 0
     
     init(mode: EditingMode = .none, selectedComponent: BaseReasonComponent? = nil, canvasScale: CGFloat = 1.0) {
-        Log.editor.warning("Created new editor context")
-//        self.engine = engine
         self.mode = mode
         self.selectedComponent = selectedComponent
         self.canvasScale = canvasScale

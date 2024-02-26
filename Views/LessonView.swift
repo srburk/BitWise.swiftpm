@@ -112,13 +112,10 @@ struct LessonView: View {
                         
                         Spacer()
                         
-                        if (editor.currentSlide == 0) {
+                        if (editor.currentSlide == 0 && editor.currentlySelectedLesson.slides.count > 1) {
                             nextButton
                         } else if editor.currentSlide == editor.currentlySelectedLesson.slides.count - 1 {
-                            HStack(spacing: 10) {
-                                backButton
-                                finishButton
-                            }
+                            backButton
                         } else {
                             HStack(spacing: 10) {
                                 backButton
@@ -132,6 +129,7 @@ struct LessonView: View {
                     .onChange(of: editor.currentlySelectedLesson) { _ in
                         reloadComponents()
                     }
+                    
                     .onChange(of: editor.currentSlide) { _ in
                         reloadComponents()
                     }
@@ -141,6 +139,9 @@ struct LessonView: View {
             .frame(width: proxy.size.width * 0.2)
             .border(Color(uiColor: .systemGray3), width: 0.5)
             .ignoresSafeArea(.all, edges: [.bottom, .top])
+            .onAppear {
+                reloadComponents()
+            }
         }
     }
 }
