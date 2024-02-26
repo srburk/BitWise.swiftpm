@@ -84,13 +84,9 @@ extension ReasonEngine {
            
         self.orderNodes()
         
-        await withTaskGroup(of: Void.self) { group in
-            for sortedGroup in queue.keys.sorted() {
-                group.addTask {
-                    for node in await self.queue[sortedGroup] ?? [] {
-                        node.compute()
-                    }
-                }
+        for sortedGroup in queue.keys.sorted() {
+            for node in self.queue[sortedGroup] ?? [] {
+                node.compute()
             }
         }
     }
