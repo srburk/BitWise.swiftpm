@@ -75,6 +75,10 @@ struct InspectorView: View {
                         addComponentCell(text: "NOT Gate", shape: NOTShape()) {
                             engine.add(NOTGate())
                         }
+                        
+                        addComponentCell(text: "XOR Gate", shape: XORShape()) {
+                            engine.add(XORGate())
+                        }
                     }
                 }
                 .padding()
